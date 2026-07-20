@@ -12,7 +12,7 @@ export const siteConfig: SiteConfig = {
 	subtitle: "Demo site",
 
 	// 站点 URL
-	site_url: "https://furinasdairy.github.io",
+	site_url: "https://furinasdiary.github.io",
 
 	// 站点描述
 	description:
