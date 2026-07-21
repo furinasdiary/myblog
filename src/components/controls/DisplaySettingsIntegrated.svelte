@@ -111,7 +111,7 @@ const isBannerTitleSwitchable =
 // 是否允许用户切换横幅轮播
 const isBannerCarouselSwitchable =
 	backgroundWallpaper.common?.carousel?.switchable ?? false;
-// 是否允许用户切换樱花特效
+// 是否允许用户切换水蓝气泡特效
 const isSakuraSwitchable = sakuraConfig?.switchable ?? false;
 // 是否有任何横幅设置可显示（后续添加新设置时在此处添加条件）
 const hasBannerSettings =
@@ -394,7 +394,7 @@ onMount(() => {
 	// 从localStorage读取横幅轮播状态
 	bannerCarouselEnabled = getStoredBannerCarouselEnabled();
 
-	// 从localStorage读取樱花特效状态
+	// 从 localStorage 读取水蓝气泡特效状态
 	sakuraEnabled = getStoredSakuraEnabled();
 
 	// 从localStorage读取全屏透明设置状态

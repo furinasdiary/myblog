@@ -6,7 +6,7 @@ const SITE_LANG = "zh_CN";
 
 export const siteConfig: SiteConfig = {
 	// 站点标题
-	title: "Firefly",
+	title: "Furina",
 
 	// 站点副标题
 	subtitle: "Demo site",
@@ -20,7 +20,7 @@ export const siteConfig: SiteConfig = {
 
 	// 站点关键词
 	keywords: [
-		"Firefly",
+		"Furina",
 		"Fuwari",
 		"Astro",
 		"ACGN",
@@ -31,8 +31,8 @@ export const siteConfig: SiteConfig = {
 
 	// 主题色
 	themeColor: {
-		// 主题色的默认色相，范围从 0 到 360。例如：红色：0，青色：200，蓝绿色：250，粉色：345
-		hue: 165,
+		// 主题色的默认色相，范围从 0 到 360；230 为与芙宁娜视觉风格一致的水蓝色
+		hue: 230,
 		// 是否对访问者隐藏主题色选择器
 		fixed: false,
 		// 默认模式："light" 亮色，"dark" 暗色，"system" 跟随系统
@@ -73,25 +73,25 @@ export const siteConfig: SiteConfig = {
 		// 2. 本地图片（public目录，不优化）: { type: "image", value: "/assets/images/logo.webp", alt: "Logo" }
 		// 3. 本地图片（src目录，自动优化但会增加构建时间）: { type: "image", value: "assets/images/logo.webp", alt: "Logo" }
 		// 4. 网络图片: { type: "url", value: "https://example.com/logo.png", alt: "Logo" }
-		logo: {
-			type: "image",
-			value: "assets/images/firefly.png",
-			alt: "🍀",
-		},
+		// logo: {
+		// 	type: "image",
+		// 	value: "assets/images/firefly.png",
+		// 	alt: "🍀",
+		// },
 		// 导航栏标题
-		title: "Firefly",
+		title: "Furina",
 		// 全宽导航栏，导航栏是否占满屏幕宽度
-		widthFull: false,
+		widthFull: true,
 		// 导航菜单对齐方式，left：左对齐，center：居中
 		menuAlign: "center",
 		// 导航栏图标和标题是否跟随主题色
-		followTheme: false,
+		followTheme: true,
 		// 导航栏是否固定在顶部并始终可见
-		stickyNavbar: true,
+		stickyNavbar: false,
 	},
 
 	// 站点开始日期，用于统计运行天数
-	siteStartDate: "2025-01-01",
+	siteStartDate: "2026-07-18",
 
 	// 站点时区（IANA 时区字符串），用于格式化bangumi、rss里的构建日期时间等等..
 	// 示例："Asia/Shanghai", "UTC", 如果为空，则按照构建服务器的时区进行时区转换
@@ -100,17 +100,17 @@ export const siteConfig: SiteConfig = {
 	// 页面开关配置 - 控制特定页面的访问权限，设为false会返回404并自动隐藏对应的导航栏菜单项
 	pages: {
 		// 友链页面开关
-		friends: true,
+		friends: false,
 		// 打赏页面开关
-		sponsor: true,
+		sponsor: false,
 		// 留言板页面开关，需要配置评论系统
-		guestbook: true,
+		guestbook: false,
 		// 番组计划页面开关，含追番、游戏、书籍和音乐
-		bangumi: true,
+		bangumi: false,
 		// 相册页面开关
 		gallery: true,
 		// 追番页面开关
-		anime: true,
+		anime: false,
 		// 动态页面开关
 		dynamic: true,
 	},
@@ -124,7 +124,7 @@ export const siteConfig: SiteConfig = {
 	// 文章列表布局配置
 	postListLayout: {
 		// 默认布局模式："list" 列表模式（单列布局），"grid" 网格模式（多列布局）
-		defaultMode: "list",
+		defaultMode: "grid",
 		// 移动端默认布局模式，不设置则跟随 defaultMode
 		mobileDefaultMode: "grid",
 		// 是否允许用户切换布局

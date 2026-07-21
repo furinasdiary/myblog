@@ -346,6 +346,7 @@ const hasMultipleImages =
                     loading={index === 0 ? "eager" : "lazy"}
                     fetchpriority={index === 0 ? "high" : undefined}
                     quality={mobileQuality}
+					draggable={false}
                 />
             </div>
         ))}
@@ -362,6 +363,7 @@ const hasMultipleImages =
                     loading={index === 0 ? "eager" : "lazy"}
                     fetchpriority={index === 0 ? "high" : undefined}
                     quality={configQuality}
+					draggable={false}
                 />
             </div>
         ))}
@@ -381,6 +383,7 @@ const hasMultipleImages =
                     loading="eager"
                     fetchpriority="high"
                     quality={mobileQuality}
+					draggable={false}
                 />
             </div>
         )}
@@ -397,6 +400,7 @@ const hasMultipleImages =
                     loading="eager"
                     fetchpriority="high"
                     quality={configQuality}
+					draggable={false}
                 />
             </div>
         )}
@@ -920,6 +924,11 @@ const hasMultipleImages =
 </Layout>
 
 <style is:global>
+	#banner-images-container img {
+		-webkit-user-drag: none;
+		user-select: none;
+	}
+
   /* 右侧栏平滑过渡 */
   #right-sidebar {
     transition: opacity 0.35s ease-in-out,
@@ -936,4 +945,3 @@ const hasMultipleImages =
   }
 
 </style>
-

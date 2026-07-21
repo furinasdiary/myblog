@@ -16,6 +16,7 @@ export type {
 	GalleryConfig,
 	LicenseConfig,
 	MermaidConfig,
+	MouseEffectsConfig,
 	MusicPlayerConfig,
 	NavBarConfig,
 	PlantUMLConfig,
@@ -44,7 +45,7 @@ export { backgroundWallpaper } from "./backgroundWallpaper"; // 背景壁纸配�
 export { commentConfig } from "./commentConfig"; // 评论系统配置
 export { coverImageConfig } from "./coverImageConfig"; // 封面图配置
 export { dynamicConfig } from "./dynamicConfig"; // 动态页面配置
-export { sakuraConfig } from "./effectsConfig"; // 动画特效配置（樱花等）
+export { mouseEffectsConfig, sakuraConfig } from "./effectsConfig"; // 动画特效配置
 export { expressiveCodeConfig } from "./expressiveCodeConfig"; // 代码高亮配置
 export { fontConfig, fontsList } from "./fontConfig"; // 字体配置
 export { footerConfig } from "./footerConfig"; // 页脚配置

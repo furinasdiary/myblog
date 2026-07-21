@@ -2,7 +2,7 @@ import type { BackgroundWallpaperConfig } from "@/types/backgroundWallpaper";
 
 export const backgroundWallpaper: BackgroundWallpaperConfig = {
 	// 壁纸模式："banner" 横幅壁纸，"fullscreen" 全屏壁纸，"overlay" 全屏透明，"none" 纯色背景无壁纸
-	mode: "banner",
+	mode: "fullscreen",
 	// 是否允许用户通过导航栏切换壁纸模式
 	// 且同时维护多种壁纸模式过于复杂（已经屎山代码），在切换时有时候可能会出现一些奇怪的过渡效果或者bug
 	// 推荐只选择自己喜欢的模式并关闭切换功能
@@ -43,12 +43,16 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// 桌面背景图片（支持单张或多张随机）
 		// desktop: "assets/images/DesktopWallpaper/d1.avif",
 		desktop: [
-			"assets/images/DesktopWallpaper/d1.avif",
-			"assets/images/DesktopWallpaper/d2.avif",
-			"assets/images/DesktopWallpaper/d3.avif",
-			"assets/images/DesktopWallpaper/d4.avif",
-			"assets/images/DesktopWallpaper/d5.avif",
-			"assets/images/DesktopWallpaper/d6.avif",
+			"assets/images/DesktopWallpaper/1.jpg",
+			"assets/images/DesktopWallpaper/2.jpg",
+			"assets/images/DesktopWallpaper/3.jpg",
+			"assets/images/DesktopWallpaper/4.jpg",
+			"assets/images/DesktopWallpaper/5.jpg",
+			"assets/images/DesktopWallpaper/10.jpg",
+			"assets/images/DesktopWallpaper/11.jpg",
+			"assets/images/DesktopWallpaper/12.jpg",
+
+
 		],
 		// 移动背景图片（支持单张或多张随机）
 		// mobile: "assets/images/MobileWallpaper/m1.avif",
@@ -65,7 +69,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// 支持远程视频URL，本地视频请放在 public/assets/videos/ 目录下
 		// playerUrl: "/assets/videos/firefly.mp4",
 		playerUrl: [
-			"https://www.image2url.com/r2/default/videos/1781765166391-f2ba6648-1597-40e0-9f0a-6768ae39e574.mp4",
+			"/src/assets/videos/desktop.mp4",
 		],
 	},
 	// 横幅壁纸和全屏壁纸共享配置
@@ -81,17 +85,18 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			// 是否允许用户通过控制面板切换横幅标题显示
 			switchable: true,
 			// 主页横幅主标题
-			title: "Lovely firefly!",
+			title: "Lovely Furina!",
 			// 主页横幅主标题字体大小
-			titleSize: "3.8rem",
+			titleSize: "4.0rem",
 			// 主页横幅副标题
 			subtitle: [
-				"In Reddened Chrysalis, I Once Rest",
-				"From Shattered Sky, I Free Fall",
-				"Amidst Silenced Stars, I Deep Sleep",
-				"Upon Lighted Fyrefly, I Soon Gaze",
-				"From Undreamt Night, I Thence Shine",
-				"In Finalized Morrow, I Full Bloom",
+				"If I could sink back into the waves, the world would regain its pristine grace.",
+				"Amidst Cheering Crowds, I Weep Hush",
+				"Amidst Silent Currents, I Mask Pain",
+				"From Long Tragedy, I Step Free",
+				"From Five Centuries, I Outlive Grief",
+				"Amidst Soft Rainfall, I Shed Mask",
+				"In Final Curtainfall, I Find Peace",
 			],
 			// 主页横幅副标题字体大小
 			subtitleSize: "1.5rem",
@@ -101,7 +106,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 				// 打字机关闭 → 每次刷新随机显示一条副标题
 				enable: true,
 				// 打字速度（毫秒）
-				speed: 100,
+				speed: 80,
 				// 删除速度（毫秒）
 				deleteSpeed: 50,
 				// 完全显示后的暂停时间（毫秒）
@@ -111,19 +116,19 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// 导航栏配置
 		navbar: {
 			// 导航栏透明模式："semi" 半透明，"full" 完全透明，"semifull" 动态透明
-			transparentMode: "semi",
+			transparentMode: "semifull",
 			// 是否开启毛玻璃模糊效果，开启可能会影响页面性能，如果不开启则是半透明，请根据自己的喜好开启
 			enableBlur: true,
 			// 毛玻璃模糊度
-			blur: 5,
+			blur: 1,
 		},
 		// 水波纹动画效果配置，开启会影响页面性能，请根据自己的喜好开启
 		waves: {
 			enable: {
 				// 桌面端是否启用水波纹动画效果
-				desktop: true,
+				desktop: false,
 				// 移动端是否启用水波纹动画效果
-				mobile: true,
+				mobile: false,
 			},
 			// 是否允许用户通过控制面板切换水波纹动画
 			switchable: true,
@@ -144,7 +149,7 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// 壁纸轮播配置，横幅壁纸和全屏壁纸共享，仅在配置多张图片时生效
 		carousel: {
 			// 是否启用壁纸轮播；关闭时保持每次刷新随机显示一张
-			enable: false,
+			enable: true,
 			// 轮播切换间隔（毫秒）
 			interval: 5000,
 			// 过渡效果: 'fade' 渐变 | 'zoom' 缩放 | 'slide' 滑动 | 'kenburns' 旋转木马

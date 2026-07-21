@@ -1,0 +1,659 @@
+---
+import { mouseEffectsConfig } from "@/config";
+
+const { colors, cursor, trail, dragTrail, click } = mouseEffectsConfig;
+const effectStyle = [
+	`--judgement-primary: ${colors.primary}`,
+	`--judgement-secondary: ${colors.secondary}`,
+	`--judgement-glow: ${colors.glow}`,
+	`--judgement-cursor-size: ${cursor.size}px`,
+	`--judgement-streak-length: ${trail.streakLength}px`,
+	`--judgement-star-size: ${dragTrail.starSize}px`,
+	`--judgement-star-duration: ${dragTrail.durationMs}ms`,
+	`--judgement-click-size: ${click.crossSize}px`,
+	`--judgement-click-duration: ${click.durationMs}ms`,
+].join(";");
+---
+
+{
+	mouseEffectsConfig.enable && (
+		<div
+			id="judgement-cursor-effects"
+			class="judgement-cursor-effects"
+			style={effectStyle}
+			aria-hidden="true"
+		>
+			<svg
+				class="judgement-cursor-sword"
+				viewBox="0 0 36 36"
+				focusable="false"
+			>
+				<defs>
+					<linearGradient id="judgement-blade" x1="0" y1="0" x2="1" y2="1">
+						<stop offset="0" stop-color="#ffffff" />
+						<stop offset="0.48" stop-color="#e9faff" />
+						<stop offset="1" stop-color="#6ed7ff" />
+					</linearGradient>
+					<linearGradient id="judgement-guard" x1="0" y1="1" x2="1" y2="0">
+						<stop offset="0" stop-color="#087bc7" />
+						<stop offset="0.5" stop-color="#3dc8ff" />
+						<stop offset="1" stop-color="#ffffff" />
+					</linearGradient>
+				</defs>
+				<path
+					class="judgement-sword-blade"
+					d="M2.35 2.35 20.35 15.55 18.65 18.65 15.55 20.35Z"
+				/>
+				<path class="judgement-sword-ridge" d="M3.5 3.5 18.1 17.9" />
+				<path
+					class="judgement-sword-guard"
+					d="M13.4 23.8c2.7-1.6 4.8-3.5 6.1-5.1 1.5-1.7 3-3.7 4.4-6.2 1.2.5 2.1 1.4 2.6 2.6-1.5 2.8-3.1 4.9-4.8 6.6-1.7 1.7-3.9 3.3-6.6 4.8-1.3-.5-2.2-1.4-2.7-2.7Z"
+				/>
+				<path class="judgement-sword-grip" d="m21.8 21.8 8 8" />
+				<path class="judgement-sword-grip-line" d="m22.8 24.8 2-2m.6 5.2 2-2" />
+				<circle class="judgement-sword-gem" cx="20.3" cy="20.3" r="2.35" />
+				<path class="judgement-sword-pommel" d="m28.7 28.7 4.9 2.1-2.8 2.8Z" />
+			</svg>
+		</div>
+	)
+}
+
+<script>
+	import { mouseEffectsConfig } from "@/config";
+
+	type JudgementCursorWindow = Window & {
+		__judgementCursorCleanup?: () => void;
+	};
+
+	const judgementCursorWindow = window as JudgementCursorWindow;
+	judgementCursorWindow.__judgementCursorCleanup?.();
+
+	const root = document.getElementById("judgement-cursor-effects");
+	const sword = root?.querySelector<SVGElement>(".judgement-cursor-sword");
+	const availabilityQuery = window.matchMedia(
+		"(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)",
+	);
+
+	let teardownInteraction = () => {};
+
+	function setupInteraction(): () => void {
+		if (!root || !sword || !mouseEffectsConfig.enable) {
+			return () => {};
+		}
+
+		let hasPosition = false;
+		let lastTrailX = -100;
+		let lastTrailY = -100;
+		let isPointerDown = false;
+		let dragStarted = false;
+		let dragOriginX = -100;
+		let dragOriginY = -100;
+		let lastStarX = -100;
+		let lastStarY = -100;
+		const activeStreaks = new Set<HTMLElement>();
+		const activeCrosses = new Set<HTMLElement>();
+		const activeStars = new Set<HTMLElement>();
+		const activeStarLinks = new Set<HTMLElement>();
+		const hotspotScale = mouseEffectsConfig.cursor.size / 36;
+		const hotspotX = mouseEffectsConfig.cursor.hotspotX * hotspotScale;
+		const hotspotY = mouseEffectsConfig.cursor.hotspotY * hotspotScale;
+
+		document.documentElement.classList.add("judgement-cursor-active");
+
+		const placeSword = (x: number, y: number) => {
+			sword.style.transform = `translate3d(${x - hotspotX}px, ${y - hotspotY}px, 0)`;
+		};
+
+		const removeStreak = (streak: HTMLElement) => {
+			activeStreaks.delete(streak);
+			streak.remove();
+		};
+
+		const createStreak = (x: number, y: number, angle: number) => {
+			if (!mouseEffectsConfig.trail.enable) return;
+
+			while (activeStreaks.size >= mouseEffectsConfig.trail.maxStreaks) {
+				const oldest = activeStreaks.values().next().value as
+					| HTMLElement
+					| undefined;
+				if (!oldest) break;
+				removeStreak(oldest);
+			}
+
+			const streak = document.createElement("span");
+			streak.className = "judgement-cursor-streak";
+			streak.style.left = `${x}px`;
+			streak.style.top = `${y}px`;
+			streak.style.setProperty("--judgement-streak-angle", `${angle}deg`);
+			streak.style.setProperty(
+				"--judgement-streak-duration",
+				`${mouseEffectsConfig.trail.durationMs + Math.random() * 70}ms`,
+			);
+			root.appendChild(streak);
+			activeStreaks.add(streak);
+			streak.addEventListener("animationend", () => removeStreak(streak), {
+				once: true,
+			});
+		};
+
+		const removeStar = (star: HTMLElement) => {
+			activeStars.delete(star);
+			star.remove();
+		};
+
+		const removeStarLink = (link: HTMLElement) => {
+			activeStarLinks.delete(link);
+			link.remove();
+		};
+
+		const createDragStar = (x: number, y: number) => {
+			while (activeStars.size >= mouseEffectsConfig.dragTrail.maxPoints) {
+				const oldest = activeStars.values().next().value as
+					| HTMLElement
+					| undefined;
+				if (!oldest) break;
+				removeStar(oldest);
+			}
+
+			const star = document.createElement("span");
+			star.className = "judgement-drag-star";
+			star.style.left = `${x}px`;
+			star.style.top = `${y}px`;
+			star.style.setProperty(
+				"--judgement-star-rotation",
+				`${Math.random() * 45}deg`,
+			);
+			root.appendChild(star);
+			activeStars.add(star);
+			star.addEventListener("animationend", () => removeStar(star), {
+				once: true,
+			});
+		};
+
+		const createStarLink = (
+			startX: number,
+			startY: number,
+			endX: number,
+			endY: number,
+		) => {
+			while (activeStarLinks.size >= mouseEffectsConfig.dragTrail.maxPoints) {
+				const oldest = activeStarLinks.values().next().value as
+					| HTMLElement
+					| undefined;
+				if (!oldest) break;
+				removeStarLink(oldest);
+			}
+
+			const deltaX = endX - startX;
+			const deltaY = endY - startY;
+			const link = document.createElement("span");
+			link.className = "judgement-star-link";
+			link.style.left = `${(startX + endX) / 2}px`;
+			link.style.top = `${(startY + endY) / 2}px`;
+			link.style.width = `${Math.hypot(deltaX, deltaY)}px`;
+			link.style.setProperty(
+				"--judgement-star-link-angle",
+				`${(Math.atan2(deltaY, deltaX) * 180) / Math.PI}deg`,
+			);
+			root.appendChild(link);
+			activeStarLinks.add(link);
+			link.addEventListener("animationend", () => removeStarLink(link), {
+				once: true,
+			});
+		};
+
+		const resetDragState = () => {
+			isPointerDown = false;
+			dragStarted = false;
+		};
+
+		const updateDragTrail = (x: number, y: number) => {
+			if (!mouseEffectsConfig.dragTrail.enable || !isPointerDown) return;
+
+			if (!dragStarted) {
+				const distanceFromOrigin = Math.hypot(
+					x - dragOriginX,
+					y - dragOriginY,
+				);
+				if (
+					distanceFromOrigin <
+					mouseEffectsConfig.dragTrail.activationDistance
+				) {
+					return;
+				}
+
+				dragStarted = true;
+				lastStarX = dragOriginX;
+				lastStarY = dragOriginY;
+				createDragStar(lastStarX, lastStarY);
+			}
+
+			const pointSpacing = mouseEffectsConfig.dragTrail.pointSpacing;
+			let deltaX = x - lastStarX;
+			let deltaY = y - lastStarY;
+			let distance = Math.hypot(deltaX, deltaY);
+			let pointsCreated = 0;
+
+			while (distance >= pointSpacing && pointsCreated < 12) {
+				const nextX = lastStarX + (deltaX / distance) * pointSpacing;
+				const nextY = lastStarY + (deltaY / distance) * pointSpacing;
+				createStarLink(lastStarX, lastStarY, nextX, nextY);
+				createDragStar(nextX, nextY);
+				lastStarX = nextX;
+				lastStarY = nextY;
+				deltaX = x - lastStarX;
+				deltaY = y - lastStarY;
+				distance = Math.hypot(deltaX, deltaY);
+				pointsCreated += 1;
+			}
+		};
+
+		const createJudgementCross = (x: number, y: number) => {
+			if (!mouseEffectsConfig.click.enable) return;
+
+			const cross = document.createElement("span");
+			cross.className = "judgement-click-cross";
+			cross.style.left = `${x}px`;
+			cross.style.top = `${y}px`;
+			root.appendChild(cross);
+			activeCrosses.add(cross);
+			cross.addEventListener(
+				"animationend",
+				() => {
+					activeCrosses.delete(cross);
+					cross.remove();
+				},
+				{ once: true },
+			);
+		};
+
+		const handlePointerMove = (event: PointerEvent) => {
+			if (event.pointerType && event.pointerType !== "mouse") return;
+
+			const x = event.clientX;
+			const y = event.clientY;
+			placeSword(x, y);
+
+			if (!hasPosition) {
+				hasPosition = true;
+				lastTrailX = x;
+				lastTrailY = y;
+				root.classList.add("is-visible");
+			} else {
+				const deltaX = x - lastTrailX;
+				const deltaY = y - lastTrailY;
+				const movedDistance = Math.hypot(deltaX, deltaY);
+				if (movedDistance >= mouseEffectsConfig.trail.minDistance) {
+					const angle = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
+					createStreak((lastTrailX + x) / 2, (lastTrailY + y) / 2, angle);
+					lastTrailX = x;
+					lastTrailY = y;
+				}
+			}
+
+			if (isPointerDown && (event.buttons & 1) === 0) {
+				resetDragState();
+			} else {
+				updateDragTrail(x, y);
+			}
+		};
+
+		const handlePointerDown = (event: PointerEvent) => {
+			if (event.button !== 0) return;
+			isPointerDown = true;
+			dragStarted = false;
+			dragOriginX = event.clientX;
+			dragOriginY = event.clientY;
+			placeSword(event.clientX, event.clientY);
+			root.classList.add("is-visible");
+			createJudgementCross(event.clientX, event.clientY);
+			sword.classList.remove("is-striking");
+			void sword.getBoundingClientRect();
+			sword.classList.add("is-striking");
+		};
+
+		const handleSwordAnimationEnd = () => {
+			sword.classList.remove("is-striking");
+		};
+
+		const handlePointerLeave = () => {
+			root.classList.remove("is-visible");
+			hasPosition = false;
+			resetDragState();
+		};
+
+		document.addEventListener("pointermove", handlePointerMove, { passive: true });
+		document.addEventListener("pointerdown", handlePointerDown, { passive: true });
+		document.addEventListener("pointerup", resetDragState, { passive: true });
+		document.addEventListener("pointercancel", resetDragState, { passive: true });
+		document.documentElement.addEventListener("pointerleave", handlePointerLeave, {
+			passive: true,
+		});
+		window.addEventListener("blur", resetDragState);
+		sword.addEventListener("animationend", handleSwordAnimationEnd);
+
+		return () => {
+			document.removeEventListener("pointermove", handlePointerMove);
+			document.removeEventListener("pointerdown", handlePointerDown);
+			document.removeEventListener("pointerup", resetDragState);
+			document.removeEventListener("pointercancel", resetDragState);
+			document.documentElement.removeEventListener(
+				"pointerleave",
+				handlePointerLeave,
+			);
+			sword.removeEventListener("animationend", handleSwordAnimationEnd);
+			window.removeEventListener("blur", resetDragState);
+			document.documentElement.classList.remove("judgement-cursor-active");
+			root.classList.remove("is-visible");
+			for (const streak of activeStreaks) streak.remove();
+			for (const cross of activeCrosses) cross.remove();
+			for (const star of activeStars) star.remove();
+			for (const link of activeStarLinks) link.remove();
+			activeStreaks.clear();
+			activeCrosses.clear();
+			activeStars.clear();
+			activeStarLinks.clear();
+		};
+	}
+
+	const syncAvailability = () => {
+		teardownInteraction();
+		teardownInteraction = availabilityQuery.matches ? setupInteraction() : () => {};
+	};
+
+	availabilityQuery.addEventListener("change", syncAvailability);
+	syncAvailability();
+
+	judgementCursorWindow.__judgementCursorCleanup = () => {
+		teardownInteraction();
+		availabilityQuery.removeEventListener("change", syncAvailability);
+	};
+</script>
+
+<style is:global>
+	html.judgement-cursor-active,
+	html.judgement-cursor-active body,
+	html.judgement-cursor-active body *,
+	html.judgement-cursor-active body *::before,
+	html.judgement-cursor-active body *::after {
+		cursor: none !important;
+	}
+
+	.judgement-cursor-effects {
+		position: fixed;
+		inset: 0;
+		z-index: 100000;
+		pointer-events: none;
+		visibility: hidden;
+		opacity: 0;
+		transition: opacity 80ms ease;
+		contain: layout style;
+	}
+
+	.judgement-cursor-effects.is-visible {
+		visibility: visible;
+		opacity: 1;
+	}
+
+	.judgement-cursor-sword {
+		position: fixed;
+		left: 0;
+		top: 0;
+		width: var(--judgement-cursor-size);
+		height: var(--judgement-cursor-size);
+		overflow: visible;
+		filter: drop-shadow(0 0 3px var(--judgement-secondary))
+			drop-shadow(0 0 7px var(--judgement-glow));
+		will-change: transform, filter;
+	}
+
+	.judgement-cursor-sword.is-striking {
+		animation: judgement-sword-strike 240ms ease-out;
+	}
+
+	.judgement-sword-blade {
+		fill: url("#judgement-blade");
+		stroke: var(--judgement-primary);
+		stroke-width: 1.2;
+		stroke-linejoin: round;
+	}
+
+	.judgement-sword-ridge {
+		fill: none;
+		stroke: var(--judgement-secondary);
+		stroke-width: 1.05;
+		stroke-linecap: round;
+		opacity: 0.92;
+	}
+
+	.judgement-sword-guard {
+		fill: url("#judgement-guard");
+		stroke: #076aa8;
+		stroke-width: 1.05;
+		stroke-linejoin: round;
+	}
+
+	.judgement-sword-grip {
+		fill: none;
+		stroke: #075b96;
+		stroke-width: 4.2;
+		stroke-linecap: round;
+	}
+
+	.judgement-sword-grip-line {
+		fill: none;
+		stroke: var(--judgement-secondary);
+		stroke-width: 0.9;
+		stroke-linecap: round;
+		opacity: 0.9;
+	}
+
+	.judgement-sword-gem {
+		fill: var(--judgement-secondary);
+		stroke: var(--judgement-primary);
+		stroke-width: 1.5;
+	}
+
+	.judgement-sword-pommel {
+		fill: var(--judgement-primary);
+		stroke: var(--judgement-secondary);
+		stroke-width: 0.9;
+		stroke-linejoin: round;
+	}
+
+	.judgement-cursor-streak {
+		position: fixed;
+		width: var(--judgement-streak-length);
+		height: 2px;
+		border-radius: 999px;
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			color-mix(in srgb, var(--judgement-primary) 72%, white) 32%,
+			var(--judgement-secondary) 70%,
+			transparent 100%
+		);
+		box-shadow: 0 0 6px var(--judgement-glow);
+		animation: judgement-streak-fade var(--judgement-streak-duration) ease-out
+			forwards;
+		will-change: transform, opacity;
+	}
+
+	.judgement-star-link {
+		position: fixed;
+		height: 1px;
+		border-radius: 999px;
+		background: linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--judgement-primary) 45%, transparent),
+			color-mix(in srgb, var(--judgement-secondary) 82%, transparent),
+			color-mix(in srgb, var(--judgement-primary) 45%, transparent)
+		);
+		box-shadow: 0 0 5px var(--judgement-glow);
+		animation: judgement-star-link-fade var(--judgement-star-duration) ease-out
+			forwards;
+		will-change: transform, opacity;
+	}
+
+	.judgement-drag-star {
+		position: fixed;
+		width: var(--judgement-star-size);
+		height: var(--judgement-star-size);
+		clip-path: polygon(
+			50% 0%,
+			61% 39%,
+			100% 50%,
+			61% 61%,
+			50% 100%,
+			39% 61%,
+			0% 50%,
+			39% 39%
+		);
+		background: radial-gradient(
+			circle,
+			var(--judgement-secondary) 0 24%,
+			color-mix(in srgb, var(--judgement-primary) 70%, white) 48%,
+			var(--judgement-primary) 100%
+		);
+		filter: drop-shadow(0 0 3px var(--judgement-secondary))
+			drop-shadow(0 0 6px var(--judgement-glow));
+		animation: judgement-drag-star-fade var(--judgement-star-duration) ease-out
+			forwards;
+		will-change: transform, opacity;
+	}
+
+	.judgement-click-cross {
+		position: fixed;
+		width: var(--judgement-click-size);
+		height: var(--judgement-click-size);
+		border: 1px solid color-mix(in srgb, var(--judgement-primary) 65%, white);
+		border-radius: 50%;
+		box-shadow: 0 0 10px var(--judgement-glow),
+			inset 0 0 8px color-mix(in srgb, var(--judgement-primary) 28%, transparent);
+		animation: judgement-cross-flash var(--judgement-click-duration) ease-out
+			forwards;
+		will-change: transform, opacity;
+	}
+
+	.judgement-click-cross::before,
+	.judgement-click-cross::after {
+		content: "";
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		width: 125%;
+		height: 2px;
+		border-radius: 999px;
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			var(--judgement-primary) 25%,
+			var(--judgement-secondary) 50%,
+			var(--judgement-primary) 75%,
+			transparent 100%
+		);
+		box-shadow: 0 0 8px var(--judgement-glow);
+		transform: translate(-50%, -50%);
+	}
+
+	.judgement-click-cross::after {
+		transform: translate(-50%, -50%) rotate(90deg);
+	}
+
+	@keyframes judgement-sword-strike {
+		0% {
+			filter: drop-shadow(0 0 3px var(--judgement-secondary))
+				drop-shadow(0 0 7px var(--judgement-glow)) brightness(1);
+		}
+		35% {
+			filter: drop-shadow(0 0 7px var(--judgement-secondary))
+				drop-shadow(0 0 16px var(--judgement-primary)) brightness(1.55)
+				saturate(1.18);
+		}
+		100% {
+			filter: drop-shadow(0 0 3px var(--judgement-secondary))
+				drop-shadow(0 0 7px var(--judgement-glow)) brightness(1);
+		}
+	}
+
+	@keyframes judgement-streak-fade {
+		0% {
+			opacity: 0.86;
+			transform: translate(-50%, -50%) rotate(var(--judgement-streak-angle))
+				scaleX(1);
+		}
+		100% {
+			opacity: 0;
+			transform: translate(-50%, -50%) rotate(var(--judgement-streak-angle))
+				scaleX(0.16);
+		}
+	}
+
+	@keyframes judgement-star-link-fade {
+		0% {
+			opacity: 0.18;
+			transform: translate(-50%, -50%)
+				rotate(var(--judgement-star-link-angle)) scaleX(0.25);
+		}
+		14% {
+			opacity: 0.82;
+			transform: translate(-50%, -50%)
+				rotate(var(--judgement-star-link-angle)) scaleX(1);
+		}
+		72% {
+			opacity: 0.58;
+		}
+		100% {
+			opacity: 0;
+			transform: translate(-50%, -50%)
+				rotate(var(--judgement-star-link-angle)) scaleX(0.08);
+		}
+	}
+
+	@keyframes judgement-drag-star-fade {
+		0% {
+			opacity: 0.2;
+			transform: translate(-50%, -50%) scale(0.28)
+				rotate(var(--judgement-star-rotation));
+		}
+		14% {
+			opacity: 1;
+			transform: translate(-50%, -50%) scale(1)
+				rotate(var(--judgement-star-rotation));
+		}
+		72% {
+			opacity: 0.78;
+		}
+		100% {
+			opacity: 0;
+			transform: translate(-50%, -50%) scale(0.18)
+				rotate(var(--judgement-star-rotation));
+		}
+	}
+
+	@keyframes judgement-cross-flash {
+		0% {
+			opacity: 0.96;
+			transform: translate(-50%, -50%) scale(0.18) rotate(0deg);
+		}
+		55% {
+			opacity: 0.82;
+		}
+		100% {
+			opacity: 0;
+			transform: translate(-50%, -50%) scale(1.15) rotate(18deg);
+		}
+	}
+
+	@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+		.judgement-cursor-effects {
+			display: none;
+		}
+
+		html.judgement-cursor-active,
+		html.judgement-cursor-active body,
+		html.judgement-cursor-active body * {
+			cursor: auto !important;
+		}
+	}
+</style>

@@ -287,7 +287,7 @@ export const zh_TW: Translation = {
 	[Key.wallpaperCarousel]: "壁紙輪播",
 	[Key.wavesAnimation]: "水波紋動畫",
 	[Key.gradientTransition]: "漸變過渡",
-	[Key.sakuraEffect]: "櫻花特效",
+	[Key.sakuraEffect]: "水藍氣泡",
 	[Key.effectsSettings]: "特效設定",
 	[Key.overlaySettings]: "透明設定",
 	[Key.overlayOpacity]: "桌布透明度",

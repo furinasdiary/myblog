@@ -1148,7 +1148,7 @@ export function applyGradientEnabledToDocument(enabled: boolean): void {
 	}
 }
 
-// Sakura effect functions
+// Hydro bubble effect functions (legacy Sakura names preserve stored settings)
 export function getDefaultSakuraEnabled(): boolean {
 	return sakuraConfig?.enable ?? false;
 }
@@ -1173,7 +1173,7 @@ export function setSakuraEnabled(enabled: boolean): void {
 	}
 	localStorage.setItem("sakuraEnabled", String(enabled));
 	document.documentElement.setAttribute("data-sakura-enabled", String(enabled));
-	// 实时切换樱花特效
+	// 实时切换水蓝气泡特效
 	window.dispatchEvent(
 		new CustomEvent("sakuraToggle", { detail: { enabled } }),
 	);

@@ -29,6 +29,7 @@ interface Props {
 	sizes?: string;
 	quality?: number;
 	fadeIn?: boolean;
+	draggable?: boolean;
 }
 
 const {
@@ -46,6 +47,7 @@ const {
 	sizes,
 	quality = getImageQuality(),
 	fadeIn = true,
+	draggable,
 } = Astro.props;
 
 const fallbackFormat = getFallbackFormat();
@@ -118,6 +120,7 @@ const lqipProps = isLocal
             style={imageStyle}
             loading={loading}
             fetchpriority={fetchpriority}
+			draggable={draggable}
             formats={formats}
             fallbackFormat={fallbackFormat}
             {...responsiveProps}
@@ -131,8 +134,9 @@ const lqipProps = isLocal
             style={imageStyle}
             loading={loading}
             fetchpriority={fetchpriority}
+			draggable={draggable}
             {...responsiveProps}
         />
     )}
-    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading} fetchpriority={fetchpriority} referrerpolicy={referrerPolicy} />}
+    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle} loading={loading} fetchpriority={fetchpriority} referrerpolicy={referrerPolicy} draggable={draggable} />}
 </div>
