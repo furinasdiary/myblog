@@ -1,4 +1,3 @@
-import desktopVideo from "../assets/videos/desktop.mp4?url";
 import type { BackgroundWallpaperConfig } from "@/types/backgroundWallpaper";
 
 export const backgroundWallpaper: BackgroundWallpaperConfig = {
@@ -58,20 +57,23 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 		// 移动背景图片（支持单张或多张随机）
 		// mobile: "assets/images/MobileWallpaper/m1.avif",
 		mobile: [
-			"assets/images/DesktopWallpaper/1.jpg",
-			"assets/images/DesktopWallpaper/2.jpg",
-			"assets/images/DesktopWallpaper/3.jpg",
-			"assets/images/DesktopWallpaper/4.jpg",
-			"assets/images/DesktopWallpaper/5.jpg",
-			"assets/images/DesktopWallpaper/10.jpg",
-			"assets/images/DesktopWallpaper/11.jpg",
-			"assets/images/DesktopWallpaper/12.jpg",
+			"assets/images/MobileWallpaper/1.jpg",
+			"assets/images/MobileWallpaper/2.jpg",
+			"assets/images/MobileWallpaper/3.jpg",
+			"assets/images/MobileWallpaper/4.jpg",
+			"assets/images/MobileWallpaper/5.jpg",
+			"assets/images/MobileWallpaper/6.jpg",
+			"assets/images/MobileWallpaper/8.jpg",
+			"assets/images/MobileWallpaper/9.jpg",
+			"assets/images/MobileWallpaper/10.jpg",
+			"assets/images/MobileWallpaper/11.jpg",
+			"assets/images/MobileWallpaper/12.jpg",
 		],
 		// 背景视频播放地址
 		// 支持单个视频路径（字符串）或多个视频循环（数组）
-		// 支持远程视频URL，本地视频请放在 public/assets/videos/ 目录下
+		// 支持远程 URL、public 目录路径（以 "/" 开头）和 src/assets/videos 目录路径
 		// playerUrl: "/assets/videos/firefly.mp4",
-		playerUrl: [desktopVideo],
+		playerUrl: ["assets/videos/desktop.mp4"],
 	},
 	// 横幅壁纸和全屏壁纸共享配置
 	common: {

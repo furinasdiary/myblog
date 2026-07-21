@@ -2,6 +2,7 @@
 import { Icon } from "astro-icon/components";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
+import { url } from "@/utils/url-utils";
 
 export interface Props {
 	playerUrl: string | string[];
@@ -10,7 +11,43 @@ export interface Props {
 
 const { playerUrl, playerMode = "order" } = Astro.props;
 
-const urls = Array.isArray(playerUrl) ? playerUrl : [playerUrl];
+const videoFiles = import.meta.glob<string>(
+	"../../assets/videos/**/*.{mp4,webm,ogg}",
+	{
+		eager: true,
+		import: "default",
+		query: "?url",
+	},
+);
+
+const rawUrls = Array.isArray(playerUrl) ? playerUrl : [playerUrl];
+const urls = rawUrls
+	.map((videoUrl) => {
+		if (
+			videoUrl.startsWith("http://") ||
+			videoUrl.startsWith("https://") ||
+			videoUrl.startsWith("//") ||
+			videoUrl.startsWith("data:") ||
+			videoUrl.startsWith("blob:")
+		) {
+			return videoUrl;
+		}
+
+		if (videoUrl.startsWith("/")) {
+			return url(videoUrl);
+		}
+
+		const normalizedPath = `../../${videoUrl}`.replace(/\\/g, "/");
+		const resolvedUrl = videoFiles[normalizedPath];
+		if (!resolvedUrl) {
+			console.error(
+				`[ERROR] Background video not found: ${normalizedPath.replace("../../", "src/")}`,
+			);
+			return null;
+		}
+		return resolvedUrl;
+	})
+	.filter((videoUrl): videoUrl is string => videoUrl !== null);
 const hasMultiple = urls.length > 1;
 const urlsJson = JSON.stringify(urls);
 
