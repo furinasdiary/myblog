@@ -9,7 +9,7 @@ export const siteConfig: SiteConfig = {
 	title: "Furina",
 
 	// 站点副标题
-	subtitle: "Demo site",
+	subtitle: "Demo",
 
 	// 站点 URL
 	site_url: "https://furinasdiary.github.io",
