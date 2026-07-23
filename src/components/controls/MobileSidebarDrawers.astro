@@ -1,0 +1,373 @@
+---
+interface Props {
+	showLeft?: boolean;
+	showRight?: boolean;
+}
+
+const { showLeft = true, showRight = true } = Astro.props;
+---
+
+{
+	(showLeft || showRight) && (
+		<>
+			<div
+				id="mobile-sidebar-backdrop"
+				class="mobile-sidebar-backdrop"
+				aria-hidden="true"
+			/>
+
+			{showLeft && (
+				<button
+					type="button"
+					class="mobile-sidebar-toggle mobile-sidebar-toggle-left"
+					data-mobile-sidebar-toggle="left"
+					aria-controls="left-sidebar"
+					aria-expanded="false"
+					aria-label="打开左侧栏"
+					title="打开左侧栏"
+				>
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<path d="m9 5 7 7-7 7" />
+					</svg>
+				</button>
+			)}
+
+			{showRight && (
+				<button
+					type="button"
+					class="mobile-sidebar-toggle mobile-sidebar-toggle-right"
+					data-mobile-sidebar-toggle="right"
+					aria-controls="right-sidebar"
+					aria-expanded="false"
+					aria-label="打开右侧栏"
+					title="打开右侧栏"
+				>
+					<svg viewBox="0 0 24 24" aria-hidden="true">
+						<path d="m15 5-7 7 7 7" />
+					</svg>
+				</button>
+			)}
+		</>
+	)
+}
+
+<script>
+	const MOBILE_SIDEBAR_BREAKPOINT = 768;
+
+	type DrawerSide = "left" | "right";
+
+	const getDrawer = (side: DrawerSide): HTMLElement | null =>
+		document.querySelector<HTMLElement>(`.mobile-sidebar-drawer-${side}`);
+
+	const getToggle = (side: DrawerSide): HTMLButtonElement | null =>
+		document.querySelector<HTMLButtonElement>(
+			`[data-mobile-sidebar-toggle="${side}"]`,
+		);
+
+	const getBackdrop = (): HTMLElement | null =>
+		document.getElementById("mobile-sidebar-backdrop");
+
+	const isMobileDrawerViewport = (): boolean =>
+		window.innerWidth < MOBILE_SIDEBAR_BREAKPOINT;
+
+	const setDrawerAccessibility = (
+		drawer: HTMLElement,
+		isOpen: boolean,
+	): void => {
+		if (!isMobileDrawerViewport()) {
+			drawer.removeAttribute("inert");
+			drawer.removeAttribute("aria-hidden");
+			return;
+		}
+
+		drawer.setAttribute("aria-hidden", String(!isOpen));
+		if (isOpen) {
+			drawer.removeAttribute("inert");
+		} else {
+			drawer.setAttribute("inert", "");
+		}
+	};
+
+	const syncDrawerState = (): void => {
+		const leftDrawer = getDrawer("left");
+		const rightDrawer = getDrawer("right");
+		const anyOpen =
+			leftDrawer?.classList.contains("is-open") ||
+			rightDrawer?.classList.contains("is-open") ||
+			false;
+
+		document.body.classList.toggle("mobile-sidebar-open", anyOpen);
+		getBackdrop()?.classList.toggle("is-open", anyOpen);
+		getBackdrop()?.setAttribute("aria-hidden", String(!anyOpen));
+
+		(["left", "right"] as const).forEach((side) => {
+			const drawer = getDrawer(side);
+			const toggle = getToggle(side);
+			const isOpen = drawer?.classList.contains("is-open") ?? false;
+
+			if (drawer) setDrawerAccessibility(drawer, isOpen);
+			if (toggle) {
+				toggle.classList.toggle("is-active", isOpen);
+				toggle.setAttribute("aria-expanded", String(isOpen));
+				toggle.setAttribute(
+					"aria-label",
+					isOpen ? `关闭${side === "left" ? "左" : "右"}侧栏` : `打开${side === "left" ? "左" : "右"}侧栏`,
+				);
+				toggle.title = toggle.getAttribute("aria-label") ?? "";
+			}
+		});
+	};
+
+	const closeDrawers = (returnFocus = false): void => {
+		let activeSide: DrawerSide | null = null;
+		(["left", "right"] as const).forEach((side) => {
+			const drawer = getDrawer(side);
+			if (drawer?.classList.contains("is-open")) activeSide = side;
+			drawer?.classList.remove("is-open");
+		});
+		syncDrawerState();
+		if (returnFocus && activeSide) getToggle(activeSide)?.focus();
+	};
+
+	const openDrawer = (side: DrawerSide): void => {
+		const drawer = getDrawer(side);
+		if (!drawer || !isMobileDrawerViewport()) return;
+
+		const shouldOpen = !drawer.classList.contains("is-open");
+		closeDrawers();
+		if (shouldOpen) drawer.classList.add("is-open");
+		syncDrawerState();
+
+		if (shouldOpen) {
+			const firstFocusable = drawer.querySelector<HTMLElement>(
+				'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+			);
+			window.setTimeout(() => firstFocusable?.focus({ preventScroll: true }), 360);
+		}
+	};
+
+	const refreshDrawerControls = (): void => {
+		if (!isMobileDrawerViewport()) closeDrawers();
+
+		(["left", "right"] as const).forEach((side) => {
+			const drawer = getDrawer(side);
+			const toggle = getToggle(side);
+			if (!toggle) return;
+
+			const drawerAvailable =
+				!!drawer && window.getComputedStyle(drawer).display !== "none";
+			toggle.hidden = !drawerAvailable;
+		});
+
+		syncDrawerState();
+	};
+
+	const bindMobileSidebarDrawers = (): void => {
+		if (document.documentElement.dataset.mobileSidebarDrawersBound === "true") {
+			refreshDrawerControls();
+			return;
+		}
+
+		document.documentElement.dataset.mobileSidebarDrawersBound = "true";
+
+		document.addEventListener("click", (event) => {
+			const target = event.target as Element | null;
+			const toggle = target?.closest<HTMLElement>("[data-mobile-sidebar-toggle]");
+
+			if (toggle) {
+				const side = toggle.dataset.mobileSidebarToggle as DrawerSide;
+				openDrawer(side);
+				return;
+			}
+
+			if (
+				target?.closest("#mobile-sidebar-backdrop") ||
+				target?.closest(".mobile-sidebar-drawer a")
+			) {
+				closeDrawers();
+			}
+		});
+
+		document.addEventListener("keydown", (event) => {
+			if (event.key === "Escape") closeDrawers(true);
+		});
+
+		window.addEventListener("resize", refreshDrawerControls, { passive: true });
+		document.addEventListener("astro:before-swap", () => closeDrawers());
+		document.addEventListener("astro:page-load", refreshDrawerControls);
+		document.addEventListener("swup:willReplaceContent", () => closeDrawers());
+		document.addEventListener("swup:contentReplaced", () => {
+			window.setTimeout(refreshDrawerControls, 0);
+		});
+
+		refreshDrawerControls();
+	};
+
+	bindMobileSidebarDrawers();
+</script>
+
+<style is:global>
+	.mobile-sidebar-backdrop,
+	.mobile-sidebar-toggle {
+		display: none;
+	}
+
+	@media (max-width: 767px) {
+		body.mobile-sidebar-open {
+			overflow: hidden;
+		}
+
+		.mobile-sidebar-drawer {
+			position: fixed !important;
+			display: block !important;
+			top: 0;
+			bottom: 0;
+			z-index: 120;
+			width: min(86vw, 22rem);
+			margin: 0 !important;
+			padding:
+				calc(4.75rem + env(safe-area-inset-top))
+				0.75rem
+				calc(1rem + env(safe-area-inset-bottom));
+			overflow-x: hidden;
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			background: color-mix(in oklch, var(--card-bg) 90%, transparent);
+			border: 1px solid color-mix(in oklch, var(--primary) 22%, transparent);
+			box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 28%);
+			backdrop-filter: blur(22px) saturate(135%);
+			-webkit-backdrop-filter: blur(22px) saturate(135%);
+			contain: none !important;
+			transition:
+				transform 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+				visibility 0.34s;
+			visibility: hidden;
+			will-change: transform;
+		}
+
+		.mobile-sidebar-drawer-left {
+			left: 0;
+			border-left: 0;
+			border-radius: 0 1.5rem 1.5rem 0;
+			transform: translate3d(-104%, 0, 0);
+		}
+
+		.mobile-sidebar-drawer-right {
+			right: 0;
+			border-right: 0;
+			border-radius: 1.5rem 0 0 1.5rem;
+			transform: translate3d(104%, 0, 0);
+		}
+
+		.mobile-sidebar-drawer.is-open {
+			transform: translate3d(0, 0, 0);
+			visibility: visible;
+		}
+
+		.mobile-sidebar-drawer > #left-sidebar,
+		.mobile-sidebar-drawer > #right-sidebar {
+			display: flex !important;
+			width: 100%;
+			max-width: none !important;
+			margin: 0 !important;
+			padding: 0 !important;
+			opacity: 1 !important;
+			transform: none !important;
+			animation: none !important;
+		}
+
+		.mobile-sidebar-drawer #left-sidebar-sticky,
+		.mobile-sidebar-drawer #right-sidebar-sticky {
+			position: static !important;
+			top: auto !important;
+		}
+
+		.mobile-sidebar-backdrop {
+			position: fixed;
+			display: block;
+			inset: 0;
+			z-index: 110;
+			background: rgb(3 12 20 / 48%);
+			backdrop-filter: blur(3px);
+			-webkit-backdrop-filter: blur(3px);
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 0.28s ease;
+		}
+
+		.mobile-sidebar-backdrop.is-open {
+			opacity: 1;
+			pointer-events: auto;
+		}
+
+		.mobile-sidebar-toggle {
+			position: fixed;
+			top: 52%;
+			z-index: 130;
+			display: flex;
+			width: 2.75rem;
+			height: 2.75rem;
+			align-items: center;
+			justify-content: center;
+			border: 1px solid color-mix(in oklch, var(--primary) 30%, transparent);
+			border-radius: 999px;
+			color: white;
+			background: color-mix(in oklch, var(--primary) 88%, var(--card-bg));
+			box-shadow:
+				0 0.5rem 1.5rem rgb(0 0 0 / 22%),
+				0 0 1.25rem color-mix(in oklch, var(--primary) 34%, transparent);
+			transform: translateY(-50%);
+			transition:
+				left 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+				right 0.34s cubic-bezier(0.22, 1, 0.36, 1),
+				transform 0.2s ease,
+				background-color 0.2s ease;
+			cursor: pointer;
+			-webkit-tap-highlight-color: transparent;
+		}
+
+		.mobile-sidebar-toggle:active {
+			transform: translateY(-50%) scale(0.9);
+		}
+
+		.mobile-sidebar-toggle svg {
+			width: 1.45rem;
+			height: 1.45rem;
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 2.4;
+			stroke-linecap: round;
+			stroke-linejoin: round;
+			transition: transform 0.3s ease;
+		}
+
+		.mobile-sidebar-toggle-left {
+			left: max(0.55rem, env(safe-area-inset-left));
+		}
+
+		.mobile-sidebar-toggle-right {
+			right: max(0.55rem, env(safe-area-inset-right));
+		}
+
+		.mobile-sidebar-toggle-left.is-active {
+			left: calc(min(86vw, 22rem) - 3.35rem);
+		}
+
+		.mobile-sidebar-toggle-right.is-active {
+			right: calc(min(86vw, 22rem) - 3.35rem);
+		}
+
+		.mobile-sidebar-toggle.is-active svg {
+			transform: rotate(180deg);
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			.mobile-sidebar-drawer,
+			.mobile-sidebar-backdrop,
+			.mobile-sidebar-toggle,
+			.mobile-sidebar-toggle svg {
+				transition-duration: 0.01ms !important;
+			}
+		}
+	}
+</style>

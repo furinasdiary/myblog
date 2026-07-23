@@ -9,6 +9,7 @@ import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 import ImageWrapper from "@/components/common/ImageWrapper.astro";
 import FloatingControls from "@/components/controls/FloatingControls.astro";
+import MobileSidebarDrawers from "@/components/controls/MobileSidebarDrawers.astro";
 import ScrollDownIndicator from "@/components/controls/ScrollDownIndicator.astro";
 import BackgroundPlayer from "@/components/features/BackgroundPlayer.astro";
 import TypewriterText from "@/components/features/TypewriterText.astro";
@@ -831,7 +832,7 @@ const hasMultipleImages =
             {sidebarLayoutConfig.position !== "right" ? (
                 <>
                     {sidebarLayoutConfig.enable ? (
-                        <div id="left-sidebar-wrapper" class="contents" data-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"} style="contain: layout style paint;">
+                        <div id="left-sidebar-wrapper" class="contents mobile-sidebar-drawer mobile-sidebar-drawer-left" data-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"} style="contain: layout style paint;">
                             {effectiveHasLeftComponents && (
                                 <SideBar
                                     side={effectiveIsBothSidebars ? "left" : undefined}
@@ -847,7 +848,7 @@ const hasMultipleImages =
                     <div id="left-sidebar-dynamic" class="hidden transition-swup-fade"></div>
                 </>
             ) : (
-                <div id="left-sidebar-dynamic" class="contents transition-swup-fade">
+                <div id="left-sidebar-dynamic" class="contents transition-swup-fade mobile-sidebar-drawer mobile-sidebar-drawer-left">
                     {effectiveIsBothSidebars && effectiveHasLeftComponents && (
 						<SideBar side="left" class={sidebarClass} headings={headings} encrypted={encrypted}></SideBar>
                     )}
@@ -884,7 +885,7 @@ const hasMultipleImages =
             {(sidebarLayoutConfig.position === "both" || sidebarLayoutConfig.position === "right") ? (
                 <>
                     {sidebarLayoutConfig.enable ? (
-                        <div id="right-sidebar-static" class="contents" data-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}>
+                        <div id="right-sidebar-static" class="contents mobile-sidebar-drawer mobile-sidebar-drawer-right" data-hide-sidebar-on-post={hideSidebarOnPostPage ? "true" : "false"}>
                             {(effectiveIsBothSidebars || sidebarLayoutConfig.position === "right") && effectiveHasRightComponents && (
 								<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted}></SideBar>
                             )}
@@ -895,7 +896,7 @@ const hasMultipleImages =
                     <div id="right-sidebar-dynamic" class="hidden transition-swup-fade"></div>
                 </>
             ) : (
-                <div id="right-sidebar-dynamic" class="contents transition-swup-fade">
+                <div id="right-sidebar-dynamic" class="contents transition-swup-fade mobile-sidebar-drawer mobile-sidebar-drawer-right">
                     {effectiveIsBothSidebars && effectiveHasRightComponents && (
 						<SideBar side="right" class={rightSidebarClass} headings={headings} encrypted={encrypted}></SideBar>
                     )}
@@ -903,7 +904,7 @@ const hasMultipleImages =
             )}
 
             {/* 移动端底部组件 - 768px及以下显示 */}
-            {sidebarLayoutConfig.mobileBottomComponents && sidebarLayoutConfig.mobileBottomComponents.length > 0 && (
+            {!sidebarLayoutConfig.enable && sidebarLayoutConfig.mobileBottomComponents && sidebarLayoutConfig.mobileBottomComponents.length > 0 && (
                 <div id="mobile-bottom-sidebar" class="col-span-1 block md:hidden mt-4">
 					<SideBar side="bottom" headings={headings} encrypted={encrypted}></SideBar>
                 </div>
@@ -913,6 +914,13 @@ const hasMultipleImages =
                 <Footer></Footer>
             </div>
         </div>
+
+        {sidebarLayoutConfig.enable && (
+            <MobileSidebarDrawers
+                showLeft={effectiveHasLeftComponents}
+                showRight={effectiveHasRightComponents}
+            />
+        )}
 
         {spineModelConfig.enable && <SpineModel />}
         {live2dWidgetConfig.enable && <Live2DWidget config={live2dWidgetConfig} />}
