@@ -59,7 +59,7 @@ const managerConfigStr = JSON.stringify({
 <script is:inline data-swup-ignore-script define:vars={{ managerConfigStr }}>
 (function () {
     // Singleton guard – only create once
-    if (window.__fireflyMusic) return;
+    if (window.__furinaMusic) return;
 
     var config = JSON.parse(managerConfigStr);
 
@@ -406,7 +406,7 @@ const managerConfigStr = JSON.stringify({
     }
 
     // ── Public API ───────────────────────────────────────────
-    window.__fireflyMusic = {
+    window.__furinaMusic = {
         init: init,
         getState: function () {
             var track = state.playlist[state.currentIndex] || null;

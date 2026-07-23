@@ -85,27 +85,19 @@ export const spineModelConfig: SpineModelConfig = {
 // Live2D 看板娘配置 (使用 l2d-widget 库，文档：https://l2d-widget.hacxy.cn)
 export const live2dWidgetConfig: Live2DWidgetConfig = {
 	// Live2D 看板娘开关
-	enable: false,
+	enable: true,
 	// 模型配置，支持单个模型或数组（多模型切换）
 	model: [
 		{
 			// Live2D模型本地文件路径
-			path: "/pio/models/live2d/snow_miku/model.json",
+			path: "/pio/models/live2d/furina-cat/cat.model3.json",
 			// 动作声音音量 范围0~1，默认 0（静音）
 			volume: 0,
 			// 模型缩放比例
-			scale: 1,
+			scale: 1.0,
 			// X轴偏移，范围 -2~2，正值向右
 			x: 0,
 			// Y轴偏移，范围 -2~2，正值向上
-			y: 0,
-		},
-		{
-			// 外部直连模型
-			path: "https://model.hacxy.cn/cat-black/model.json",
-			volume: 0,
-			scale: 1,
-			x: 0,
 			y: 0,
 		},
 	],
@@ -113,7 +105,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 	position: "bottom-left" as const,
 	// 画布尺寸（px）
 	size: { width: 200, height: 200 },
-	// 主题色，用于菜单、状态条等 UI 元素的背景色，默认 'rgba(96,165,250,0.9)'
+	// 主题色，用于菜单、状态条等 UI 元素的背景色，默认 'rgba(33, 131, 251, 0.9)'
 	primaryColor: "var(--l2d-msg-bg)",
 	// 入场/退场动画时长（ms）
 	transitionDuration: 1500,
@@ -157,9 +149,10 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 		// 气泡开关
 		enable: true,
 		// 初始欢迎消息
-		welcomeMessage: ["你好呀！", "欢迎来到我的世界！"],
+		welcomeMessage: ["你好呀，我是芙宁娜！💖"],
 		// 循环提示内容
 		messages: [
+			"欢迎来到我的世界！",
 			"有什么需要帮助的吗？",
 			"今天天气真不错呢！",
 			"要不要一起玩游戏？",
@@ -178,7 +171,7 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 	// 响应式配置
 	responsive: {
 		// 在移动端隐藏
-		hideOnMobile: true,
+		hideOnMobile: false,
 		// 移动端断点
 		mobileBreakpoint: 768,
 	},

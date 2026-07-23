@@ -5,8 +5,11 @@ type DetectBuildPlatformOptions = {
 	isDev?: boolean;
 	unknownBuildPlatform?: string;
 };
-//“FIREFLY_BUILD_PLATFORM”环境变量自定义命名构建平台
-const BUILD_PLATFORM_OVERRIDE_KEY = "FIREFLY_BUILD_PLATFORM";
+// 优先使用新的 Furina 环境变量，同时兼容原主题的旧变量名
+const BUILD_PLATFORM_OVERRIDE_KEYS = [
+	"FURINA_BUILD_PLATFORM",
+	"FIREFLY_BUILD_PLATFORM",
+] as const;
 
 function hasNonEmptyEnv(
 	env: Record<string, string | undefined>,
@@ -41,9 +44,11 @@ export function detectBuildPlatform({
 	isDev = false,
 	unknownBuildPlatform = "Unknown CI",
 }: DetectBuildPlatformOptions): string {
-	const overrideValue = env[BUILD_PLATFORM_OVERRIDE_KEY];
+	const overrideValue = BUILD_PLATFORM_OVERRIDE_KEYS.map((key) => env[key]).find(
+		(value) => typeof value === "string" && value.trim() !== "",
+	);
 	if (typeof overrideValue === "string" && overrideValue.trim() !== "") {
-		// 环境变量显式覆盖最优先，可以用“FIREFLY_BUILD_PLATFORM”环境变量自定义不同部署平台的名字（默认值为空，无定义，继续后续自动识别）
+		// 环境变量显式覆盖最优先；未设置时继续自动识别部署平台
 		return overrideValue.trim();
 	}
 	// ciName 自动识别

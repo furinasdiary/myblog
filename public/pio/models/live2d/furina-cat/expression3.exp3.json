@@ -1,0 +1,65 @@
+{
+	"Type": "Live2D Expression",
+	"Parameters": [
+		{
+			"Id": "Param2",
+			"Value": 1,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamMouseX",
+			"Value": 0.577,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamMouseY",
+			"Value": -25.385,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamEyeLOpen",
+			"Value": -0.35,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamEyeROpen",
+			"Value": -0.35,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamBrowLForm",
+			"Value": -1,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamBrowRForm",
+			"Value": -1,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamEyeBallX",
+			"Value": -0.038,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamAngleY",
+			"Value": -7.5,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamAngleX",
+			"Value": 1.731,
+			"Blend": "Add"
+		},
+		{
+			"Id": "Param58",
+			"Value": -30,
+			"Blend": "Add"
+		},
+		{
+			"Id": "Param11",
+			"Value": -30,
+			"Blend": "Add"
+		}
+	]
+}

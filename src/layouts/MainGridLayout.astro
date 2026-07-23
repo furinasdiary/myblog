@@ -18,6 +18,7 @@ import {
 	live2dWidgetConfig,
 	sidebarLayoutConfig,
 	siteConfig,
+	spineModelConfig,
 } from "@/config";
 import {
 	BANNER_HEIGHT,
@@ -665,11 +666,11 @@ const hasMultipleImages =
                 if (Array.isArray(subtitles) && subtitles.length > 0 && !subtitleElement.querySelector('.typewriter')) {
                     // Use a global variable to persist the subtitle across Swup navigations
                     // This variable will be reset on full page reload (F5), meeting the requirement
-                    if (!window.fireflyCachedSubtitle) {
+                    if (!window.furinaCachedSubtitle) {
                         const randomIndex = Math.floor(Math.random() * subtitles.length);
-                        window.fireflyCachedSubtitle = subtitles[randomIndex];
+                        window.furinaCachedSubtitle = subtitles[randomIndex];
                     }
-                    subtitleElement.textContent = window.fireflyCachedSubtitle;
+                    subtitleElement.textContent = window.furinaCachedSubtitle;
                 }
             } catch (e) {
                 console.error("Failed to parse subtitles", e);
@@ -913,7 +914,7 @@ const hasMultipleImages =
             </div>
         </div>
 
-        <SpineModel></SpineModel>
+        {spineModelConfig.enable && <SpineModel />}
         {live2dWidgetConfig.enable && <Live2DWidget config={live2dWidgetConfig} />}
     </div>
 </div>

@@ -21,7 +21,7 @@ declare global {
 				}>;
 			}>;
 		};
-		__fireflyMusic?: {
+		__furinaMusic?: {
 			init: () => Promise<void>;
 			getState: () => {
 				playlist: Array<{

@@ -53,10 +53,12 @@ export async function GET(context: APIContext) {
 	return rss({
 		title: siteConfig.title,
 		description: siteConfig.subtitle || "No description",
-		site: context.site ?? "https://firefly.cuteleaf.cn",
-		customData: `<templateTheme>Firefly</templateTheme>
+		site: context.site ?? "https://furinasdiary.github.io/",
+		customData: `<templateTheme>Furina</templateTheme>
 		<templateThemeVersion>${pkg.version}</templateThemeVersion>
-		<templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl>
+		<templateThemeUrl>https://github.com/furinasdiary/furinasdiary.github.io</templateThemeUrl>
+		<templateBaseTheme>Firefly</templateBaseTheme>
+		<templateBaseThemeUrl>https://github.com/CuteLeaf/Firefly</templateBaseThemeUrl>
 		<lastBuildDate>${formatDateI18nWithTime(new Date())}</lastBuildDate>`,
 		items: feedItems,
 	});

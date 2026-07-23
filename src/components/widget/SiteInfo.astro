@@ -29,7 +29,7 @@ try {
 	const pkg = JSON.parse(
 		readFileSync(new URL("../../../package.json", import.meta.url), "utf-8"),
 	);
-	blogVersion = pkg.version || "Firefly unknown";
+	blogVersion = pkg.version || "Furina unknown";
 } catch {}
 
 // Astro 版本（从已安装的 astro 包读取）
@@ -102,7 +102,7 @@ const mainItems = [
 		icon: "mdi:clover",
 		label: i18n(I18nKey.siteInfoBlogVersion),
 		value: `Furina v${blogVersion}`,
-    href: "https://github.com/furinasdiary/myblog",
+    href: "https://github.com/furinasdiary/furinasdiary.github.io",
 	},
 	{
 		icon: "material-symbols:copyright-outline",

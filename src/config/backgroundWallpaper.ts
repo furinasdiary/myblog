@@ -48,11 +48,33 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			"assets/images/DesktopWallpaper/3.jpg",
 			"assets/images/DesktopWallpaper/4.jpg",
 			"assets/images/DesktopWallpaper/5.jpg",
+			"assets/images/DesktopWallpaper/6.jpg",
+			"assets/images/DesktopWallpaper/7.jpg",
+			"assets/images/DesktopWallpaper/8.jpg",
+			"assets/images/DesktopWallpaper/9.jpg",
 			"assets/images/DesktopWallpaper/10.jpg",
 			"assets/images/DesktopWallpaper/11.jpg",
 			"assets/images/DesktopWallpaper/12.jpg",
-
-
+			"assets/images/DesktopWallpaper/13.jpg",
+			"assets/images/DesktopWallpaper/14.jpg",
+			"assets/images/DesktopWallpaper/15.jpg",
+			"assets/images/DesktopWallpaper/16.jpg",
+			"assets/images/DesktopWallpaper/17.jpg",
+			"assets/images/DesktopWallpaper/18.jpg",
+			"assets/images/DesktopWallpaper/19.jpg",
+			"assets/images/DesktopWallpaper/20.jpg",
+			"assets/images/DesktopWallpaper/21.jpg",
+			"assets/images/DesktopWallpaper/22.jpg",
+			"assets/images/DesktopWallpaper/23.jpg",
+			"assets/images/DesktopWallpaper/24.jpg",
+			"assets/images/DesktopWallpaper/25.jpg",
+			"assets/images/DesktopWallpaper/26.jpg",
+			"assets/images/DesktopWallpaper/27.jpg",
+			"assets/images/DesktopWallpaper/28.jpg",
+			"assets/images/DesktopWallpaper/29.jpg",
+			"assets/images/DesktopWallpaper/30.jpg",
+			"assets/images/DesktopWallpaper/31.jpg",
+			"assets/images/DesktopWallpaper/32.jpg",
 		],
 		// 移动背景图片（支持单张或多张随机）
 		// mobile: "assets/images/MobileWallpaper/m1.avif",
@@ -62,14 +84,14 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			"assets/images/MobileWallpaper/3.jpg",
 			"assets/images/MobileWallpaper/4.jpg",
 			"assets/images/MobileWallpaper/5.jpg",
-			"assets/images/MobileWallpaper/10.jpg",
-			"assets/images/MobileWallpaper/11.jpg",
-			"assets/images/MobileWallpaper/12.jpg",
+			"assets/images/MobileWallpaper/6.jpg",
+			"assets/images/MobileWallpaper/7.jpg",
+			"assets/images/MobileWallpaper/8.jpg",
 		],
 		// 背景视频播放地址
 		// 支持单个视频路径（字符串）或多个视频循环（数组）
 		// 支持远程 URL、public 目录路径（以 "/" 开头）和 src/assets/videos 目录路径
-		// playerUrl: "/assets/videos/firefly.mp4",
+		// playerUrl: "/assets/videos/furina.mp4",
 		playerUrl: ["assets/videos/desktop.mp4"],
 	},
 	// 横幅壁纸和全屏壁纸共享配置
@@ -87,16 +109,16 @@ export const backgroundWallpaper: BackgroundWallpaperConfig = {
 			// 主页横幅主标题
 			title: "Lovely Furina!",
 			// 主页横幅主标题字体大小
-			titleSize: "4.0rem",
+			titleSize: "3.0rem",
 			// 主页横幅副标题
 			subtitle: [
-				"If I could sink back into the waves, the world would regain its pristine grace.",
+				"Amidst Endless Applause, I Guard My Lonely Truth.",
 				"Amidst Cheering Crowds, I Weep Hush",
-				"Amidst Silent Currents, I Mask Pain",
 				"From Long Tragedy, I Step Free",
 				"From Five Centuries, I Outlive Grief",
-				"Amidst Soft Rainfall, I Shed Mask",
+				"For Five Hundred Years, I Danced Above the Rising Tide",
 				"In Final Curtainfall, I Find Peace",
+				"Beyond the Final Trial, I Choose My Own Tomorrow",
 			],
 			// 主页横幅副标题字体大小
 			subtitleSize: "1.5rem",
