@@ -1,0 +1,20 @@
+{
+	"Type": "Live2D Expression",
+	"Parameters": [
+		{
+			"Id": "Param7",
+			"Value": 1,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamMouseX",
+			"Value": -18,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamMouseY",
+			"Value": -24,
+			"Blend": "Add"
+		}
+	]
+}

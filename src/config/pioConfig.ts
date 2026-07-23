@@ -100,6 +100,18 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// Y轴偏移，范围 -2~2，正值向上
 			y: 0,
 		},
+		{
+			// 芙宁娜普通版 Live2D 模型
+			path: "/pio/models/live2d/furina-normal/cat.model3.json",
+			// 动作声音音量 范围0~1，默认 0（静音）
+			volume: 0,
+			// 模型缩放比例
+			scale: 1.0,
+			// X轴偏移，范围 -2~2，正值向右
+			x: 0,
+			// Y轴偏移，范围 -2~2，正值向上
+			y: 0,
+		},
 	],
 	// 显示位置：bottom-left 或 bottom-right
 	position: "bottom-left" as const,
@@ -167,6 +179,20 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			x: 0, // 正值右移，负值左移
 			y: 0, // 正值下移，负值上移
 		},
+	},
+	// 点击桌宠时随机播放开心表情，并浮起芙宁娜主题粒子
+	interactive: {
+		enabled: true,
+		clickExpressions: [
+			"expression9.exp3.json",
+			"expression13.exp3.json",
+			"expression15.exp3.json",
+		],
+		clickEffects: ["💙", "✨", "💧"],
+		clickCooldown: 400,
+		// 开心表情保持时间，结束后恢复模型初始表情
+		expressionDuration: 1600,
+		resetExpression: "expression1.exp3.json",
 	},
 	// 响应式配置
 	responsive: {

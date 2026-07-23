@@ -12,7 +12,7 @@ export const profileConfig: ProfileConfig = {
 	name: "Furinasdiary",
 
 	// 个人签名
-	bio: "Hello, I'm Furinasdiary.",
+	bio: "大家好，我是Furinasdiary，目前是一名本科大二在读生，我搭建了这片专属芙宁娜与枫丹蓝海的小天地，很荣幸与你相遇。",
 
 	// 链接配置
 	// 已经预装的图标集：fa7-brands，fa7-regular，fa7-solid，material-symbols，simple-icons

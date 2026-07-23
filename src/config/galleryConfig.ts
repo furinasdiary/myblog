@@ -16,16 +16,26 @@ export const galleryConfig: GalleryConfig = {
 		// passwordHint: 密码提示，设置后在输入密码错误时显示（可选，需配合password使用）
 		// 每添加一个数组项就相当于添加了一个相册，记得在 public/gallery/ 目录下创建对应的子目录并放入图片
 		{
-			id: "Furina-2026",
-			name: "芙宁娜",
-			description: "自孤冷戏台之上，我由此闪耀登场",
+			id: "Furina",
+			name: "芙芙美图",
+			description: "",
 			location: "原神",
 			date: "2026-07-21",
-			tags: ["原神", "芙宁娜"],
+			tags: ["原神", "芙宁娜", "美图"],
+		},
+		{
+			id: "secret-furina",
+			name: "芙芙美图",
+			description: "",
+			location: "原神",
+			date: "2026-07-23",
+			tags: ["原神", "芙宁娜", "美图"],
+			password: "123456",
+			passwordHint: "密码是123456",
 		},
 	],
 
 	// 瀑布流最小列宽(px)，浏览器根据容器宽度自动计算列数，默认 240
 	// 值越小列数越多，值越大列数越少
-	columnWidth: 240,
+	columnWidth: 600,
 };

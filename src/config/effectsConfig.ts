@@ -7,7 +7,7 @@ export const mouseEffectsConfig: MouseEffectsConfig = {
 	colors: {
 		primary: "#1aaef2",
 		secondary: "#ffffff",
-		glow: "rgba(26, 174, 242, 0.62)",
+		glow: "rgba(11, 172, 246, 0.62)",
 	},
 	cursor: {
 		size: 34,

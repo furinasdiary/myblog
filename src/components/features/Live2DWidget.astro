@@ -49,6 +49,14 @@ interface Props {
 				maxValue?: number;
 			};
 		};
+		interactive?: {
+			enabled?: boolean;
+			clickExpressions?: string[];
+			clickEffects?: string[];
+			clickCooldown?: number;
+			expressionDuration?: number;
+			resetExpression?: string;
+		};
 		responsive?: {
 			hideOnMobile?: boolean;
 			mobileBreakpoint?: number;
@@ -100,6 +108,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 	data-transition-type={config.transitionType || ""}
 	data-menus={JSON.stringify(serializeMenus(config.menus))}
 	data-tips={JSON.stringify(config.tips || {})}
+	data-interactive={JSON.stringify(config.interactive || {})}
 	data-responsive={JSON.stringify(config.responsive || {})}
 >
 </div>
@@ -150,6 +159,110 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		},
 	};
 
+	function showClickParticles(x: number, y: number, effects: string[]) {
+		const particles = effects.length > 0 ? effects : ["💙", "✨", "💧"];
+		const count = Math.min(3, particles.length);
+
+		for (let index = 0; index < count; index++) {
+			const particle = document.createElement("span");
+			particle.textContent =
+				particles[Math.floor(Math.random() * particles.length)];
+			Object.assign(particle.style, {
+				position: "fixed",
+				left: `${x + (index - 1) * 12}px`,
+				top: `${y}px`,
+				zIndex: "10001",
+				pointerEvents: "none",
+				userSelect: "none",
+				fontSize: `${17 + index * 2}px`,
+				filter: "drop-shadow(0 0 6px rgba(14, 165, 233, 0.9))",
+			});
+			document.body.appendChild(particle);
+
+			const drift = (Math.random() - 0.5) * 30;
+			const animation = particle.animate(
+				[
+					{
+						transform: "translate(-50%, -20%) scale(0.65)",
+						opacity: 0,
+					},
+					{
+						transform: "translate(-50%, -45%) scale(1)",
+						opacity: 1,
+						offset: 0.25,
+					},
+					{
+						transform: `translate(calc(-50% + ${drift}px), -${60 + index * 12}px) scale(1.15)`,
+						opacity: 0,
+					},
+				],
+				{
+					duration: 850 + index * 100,
+					delay: index * 45,
+					easing: "ease-out",
+					fill: "forwards",
+				},
+			);
+
+			animation.finished
+				.then(() => particle.remove())
+				.catch(() => particle.remove());
+		}
+	}
+
+	function setupClickInteraction(widget: any, interactive: any) {
+		if (interactive.enabled === false) return;
+
+		const expressions = Array.isArray(interactive.clickExpressions)
+			? interactive.clickExpressions
+			: [];
+		if (expressions.length === 0) return;
+
+		const effects = Array.isArray(interactive.clickEffects)
+			? interactive.clickEffects
+			: [];
+		const cooldown = Math.max(0, interactive.clickCooldown ?? 700);
+		const expressionDuration = Math.max(
+			0,
+			interactive.expressionDuration ?? 1600,
+		);
+		const resetExpression =
+			typeof interactive.resetExpression === "string"
+				? interactive.resetExpression
+				: "expression1.exp3.json";
+		let lastClickAt = 0;
+		let resetTimer: number | undefined;
+
+		document.addEventListener(
+			"click",
+			(event) => {
+				const l2d = widget.l2d as any;
+				const canvas = l2d?.getCanvas?.() ?? l2d?.canvas;
+				if (!(canvas instanceof HTMLCanvasElement) || event.target !== canvas) {
+					return;
+				}
+
+				const now = Date.now();
+				if (now - lastClickAt < cooldown) return;
+				lastClickAt = now;
+
+				const expression =
+					expressions[Math.floor(Math.random() * expressions.length)];
+				l2d.setExpression?.(expression);
+				if (resetTimer !== undefined) {
+					window.clearTimeout(resetTimer);
+				}
+				resetTimer = window.setTimeout(() => {
+					const activeL2d = widget.l2d as any;
+					activeL2d?.setExpression?.(resetExpression);
+					resetTimer = undefined;
+				}, expressionDuration);
+				showClickParticles(event.clientX, event.clientY, effects);
+			},
+			{ passive: true },
+		);
+	}
+
 	function initWidget() {
 		const container = document.getElementById("l2d-widget-container");
 		if (!container) return;
@@ -165,6 +278,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			const transitionType = container.dataset.transitionType || undefined;
 			const menus = JSON.parse(container.dataset.menus || "{}");
 			const tips = JSON.parse(container.dataset.tips || "{}");
+			const interactive = JSON.parse(container.dataset.interactive || "{}");
 			const responsive = JSON.parse(container.dataset.responsive || "{}");
 
 			// 响应式检查：移动端隐藏
@@ -233,7 +347,8 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 				}
 			}
 
-			createWidget(options);
+			const widget = createWidget(options);
+			setupClickInteraction(widget, interactive);
 		} catch (e) {
 			console.error("Failed to initialize Live2D widget:", e);
 		}

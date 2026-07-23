@@ -68,6 +68,14 @@ export type Live2DWidgetConfig = {
 			maxValue?: number; // 嘴型开合最大值（0-1），默认 1
 		};
 	};
+	interactive?: {
+		enabled?: boolean; // 是否开启点击交互
+		clickExpressions?: string[]; // 点击时随机触发的模型表情
+		clickEffects?: string[]; // 点击时浮起的装饰字符
+		clickCooldown?: number; // 两次响应之间的最短间隔（毫秒）
+		expressionDuration?: number; // 点击表情保持时间（毫秒）
+		resetExpression?: string; // 表情结束后用于恢复初始状态的表情
+	};
 	responsive?: {
 		hideOnMobile?: boolean; // 是否在移动端隐藏
 		mobileBreakpoint?: number; // 移动端断点，默认 768

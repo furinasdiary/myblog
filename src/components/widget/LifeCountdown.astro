@@ -1,0 +1,312 @@
+---
+import { Icon } from "astro-icon/components";
+import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import type { WidgetComponentConfig } from "@/types/config";
+
+interface Props {
+	class?: string;
+	style?: string;
+	widgetConfig?: WidgetComponentConfig;
+}
+
+const { class: className, style, widgetConfig } = Astro.props;
+const showTitle = widgetConfig?.showTitle !== false;
+
+const countdownItems = [
+	{
+		key: "today",
+		label: "今日已经过去",
+		unit: "小时",
+		color: "#38bdf8",
+		softColor: "#bae6fd",
+	},
+	{
+		key: "week",
+		label: "本周已经过去",
+		unit: "天",
+		color: "#fbbf24",
+		softColor: "#f9fbb2",
+	},
+	{
+		key: "month",
+		label: "本月已经过去",
+		unit: "天",
+		color: "#fb7185",
+		softColor: "#fecdd3",
+	},
+	{
+		key: "year",
+		label: "今年已经过去",
+		unit: "个月",
+		color: "#4ade80",
+		softColor: "#bbf7d0",
+	},
+] as const;
+---
+
+<WidgetLayout
+	name="人生倒计时"
+	showTitle={showTitle}
+	id="life-countdown-widget"
+	class={className}
+	style={style}
+>
+	<Icon
+		slot="title-icon"
+		is:inline
+		name="material-symbols:hourglass-top-rounded"
+		class="life-countdown-title-icon"
+		aria-hidden="true"
+	/>
+
+	<div class="life-countdown-list" aria-label="人生倒计时">
+		{
+			countdownItems.map((item) => (
+				<div
+					class="life-countdown-item"
+					data-countdown-period={item.key}
+					style={`--countdown-color: ${item.color}; --countdown-soft-color: ${item.softColor};`}
+				>
+					<p class="life-countdown-label">
+						<span>{item.label}</span>
+						<strong data-countdown-value>0</strong>
+						<span>{item.unit}</span>
+					</p>
+					<div class="life-countdown-progress-line">
+						<div
+							class="life-countdown-track"
+							role="progressbar"
+							aria-label={`${item.label}的进度`}
+							aria-valuemin="0"
+							aria-valuemax="100"
+							aria-valuenow="0"
+						>
+							<span class="life-countdown-bar" data-countdown-bar />
+						</div>
+						<span class="life-countdown-percent" data-countdown-percent>
+							0%
+						</span>
+					</div>
+				</div>
+			))
+		}
+	</div>
+</WidgetLayout>
+
+<script>
+	const clampCountdownPercent = (value: number) =>
+		Math.min(100, Math.max(0, value));
+
+	function getCountdownProgress(now: Date, start: Date, end: Date) {
+		const total = end.getTime() - start.getTime();
+		const elapsed = now.getTime() - start.getTime();
+		return total > 0
+			? clampCountdownPercent((elapsed / total) * 100)
+			: 0;
+	}
+
+	function updateLifeCountdown() {
+		const root = document.getElementById("life-countdown-widget");
+		if (!(root instanceof HTMLElement)) return;
+
+		const now = new Date();
+		const todayStart = new Date(
+			now.getFullYear(),
+			now.getMonth(),
+			now.getDate(),
+		);
+		const tomorrowStart = new Date(
+			now.getFullYear(),
+			now.getMonth(),
+			now.getDate() + 1,
+		);
+
+		const mondayOffset = (now.getDay() + 6) % 7;
+		const weekStart = new Date(
+			now.getFullYear(),
+			now.getMonth(),
+			now.getDate() - mondayOffset,
+		);
+		const nextWeekStart = new Date(
+			now.getFullYear(),
+			now.getMonth(),
+			now.getDate() - mondayOffset + 7,
+		);
+
+		const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+		const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+		const yearStart = new Date(now.getFullYear(), 0, 1);
+		const nextYearStart = new Date(now.getFullYear() + 1, 0, 1);
+
+		const values = {
+			today: {
+				value: now.getHours(),
+				percent: getCountdownProgress(now, todayStart, tomorrowStart),
+			},
+			week: {
+				value: mondayOffset + 1,
+				percent: getCountdownProgress(now, weekStart, nextWeekStart),
+			},
+			month: {
+				value: now.getDate(),
+				percent: getCountdownProgress(now, monthStart, nextMonthStart),
+			},
+			year: {
+				value: now.getMonth() + 1,
+				percent: getCountdownProgress(now, yearStart, nextYearStart),
+			},
+		};
+
+		for (const [period, info] of Object.entries(values)) {
+			const item = root.querySelector<HTMLElement>(
+				`[data-countdown-period="${period}"]`,
+			);
+			if (!item) continue;
+
+			const safePercent = Number.isFinite(info.percent)
+				? clampCountdownPercent(info.percent)
+				: 0;
+			const roundedPercent = Math.round(safePercent);
+			const value = item.querySelector<HTMLElement>(
+				"[data-countdown-value]",
+			);
+			const percent = item.querySelector<HTMLElement>(
+				"[data-countdown-percent]",
+			);
+			const bar = item.querySelector<HTMLElement>("[data-countdown-bar]");
+			const track = item.querySelector<HTMLElement>('[role="progressbar"]');
+
+			if (value) value.textContent = String(info.value);
+			if (percent) percent.textContent = `${roundedPercent}%`;
+			if (bar) bar.style.width = `${safePercent}%`;
+			track?.setAttribute("aria-valuenow", String(roundedPercent));
+		}
+	}
+
+	function initLifeCountdown() {
+		updateLifeCountdown();
+
+		const countdownWindow = window as Window & {
+			__lifeCountdownTimer?: number;
+		};
+		const oldTimer = countdownWindow.__lifeCountdownTimer;
+		if (oldTimer !== undefined) {
+			window.clearInterval(oldTimer);
+		}
+		countdownWindow.__lifeCountdownTimer = window.setInterval(
+			updateLifeCountdown,
+			30_000,
+		);
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initLifeCountdown, {
+			once: true,
+		});
+	} else {
+		initLifeCountdown();
+	}
+
+	document.addEventListener("furina:page:loaded", initLifeCountdown);
+</script>
+
+<style>
+	.life-countdown-title-icon {
+		margin-right: 1rem;
+		font-size: 1.55rem;
+		color: var(--primary);
+		filter: drop-shadow(
+			0 0 6px color-mix(in srgb, var(--primary) 35%, transparent)
+		);
+	}
+
+	.life-countdown-list {
+		padding: 0.25rem 0 0.15rem;
+	}
+
+	.life-countdown-item + .life-countdown-item {
+		margin-top: 1rem;
+	}
+
+	.life-countdown-label {
+		display: flex;
+		align-items: baseline;
+		gap: 0.32rem;
+		margin: 0 0 0.45rem;
+		color: rgb(82 82 82);
+		font-size: 0.92rem;
+		line-height: 1.35;
+	}
+
+	.life-countdown-label strong {
+		color: var(--countdown-color);
+		font-size: 1.05rem;
+		font-weight: 800;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.life-countdown-progress-line {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 2.65rem;
+		align-items: center;
+		gap: 0.55rem;
+	}
+
+	.life-countdown-track {
+		height: 0.65rem;
+		overflow: hidden;
+		background: rgba(115, 115, 115, 0.62);
+		border-radius: 999px;
+		box-shadow: 0 1px 2px rgba(15, 23, 42, 0.12) inset;
+	}
+
+	.life-countdown-bar {
+		display: block;
+		position: relative;
+		width: 0;
+		height: 100%;
+		overflow: hidden;
+		background-image: linear-gradient(
+			135deg,
+			var(--countdown-color) 0 25%,
+			var(--countdown-soft-color) 25% 50%,
+			var(--countdown-color) 50% 75%,
+			var(--countdown-soft-color) 75% 100%
+		);
+		background-size: 32px 32px;
+		background-position: 0 0;
+		border-radius: inherit;
+		transition: width 700ms cubic-bezier(0.22, 1, 0.36, 1);
+		animation: countdown-stripes 0.9s linear infinite;
+		will-change: background-position;
+	}
+
+	.life-countdown-percent {
+		color: rgb(82 82 82);
+		font-size: 0.9rem;
+		font-variant-numeric: tabular-nums;
+		text-align: right;
+	}
+
+	:global(.dark) .life-countdown-label,
+	:global(.dark) .life-countdown-percent {
+		color: rgb(212 212 212);
+	}
+
+	:global(.dark) .life-countdown-track {
+		background: rgba(115, 115, 115, 0.55);
+	}
+
+	@keyframes countdown-stripes {
+		to {
+			background-position: 32px 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.life-countdown-bar {
+			transition: none;
+			animation: none;
+		}
+	}
+</style>

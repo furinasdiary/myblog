@@ -8,6 +8,7 @@ export type WidgetComponentType =
 	| "advertisement"
 	| "stats"
 	| "calendar"
+	| "lifeCountdown"
 	| "music"
 	| "siteInfo"
 	| "dynamic";

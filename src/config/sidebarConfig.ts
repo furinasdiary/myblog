@@ -166,6 +166,18 @@ export const sidebarLayoutConfig: SidebarLayoutConfig = {
 			},
 		},
 		{
+			// 组件类型：人生倒计时（显示在日历下方）
+			type: "lifeCountdown",
+			// 是否启用该组件
+			enable: true,
+			// 显示组件标题
+			showTitle: true,
+			// 与日历一起放在右侧粘性区域
+			position: "sticky",
+			// 与日历保持一致，仅在非文章页面显示
+			showOnPostPage: false,
+		},
+		{
 			// 组件类型：侧边栏目录组件（只在文章详情页显示）
 			type: "sidebarToc",
 			// 是否启用该组件

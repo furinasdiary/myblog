@@ -1,0 +1,41 @@
+{
+	"Type": "Live2D Expression",
+	"FadeInTime": 1.5,
+	"Parameters": [
+		{
+			"Id": "Param61",
+			"Value": 1,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamMouseY",
+			"Value": 12.115,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamMouseX",
+			"Value": 6.346,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamAngleX",
+			"Value": -12.692,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamEyeBallY",
+			"Value": -0.269,
+			"Blend": "Add"
+		},
+		{
+			"Id": "ParamEyeBallX",
+			"Value": 0.538,
+			"Blend": "Add"
+		},
+		{
+			"Id": "CatParamLeftHandDown",
+			"Value": 1,
+			"Blend": "Add"
+		}
+	]
+}
