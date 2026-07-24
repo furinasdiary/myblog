@@ -94,11 +94,11 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// 动作声音音量 范围0~1，默认 0（静音）
 			volume: 0,
 			// 模型缩放比例
-			scale: 1.0,
+			scale: 0.9,
 			// X轴偏移，范围 -2~2，正值向右
-			x: 0,
+			x: -0.2,
 			// Y轴偏移，范围 -2~2，正值向上
-			y: 0,
+			y: -0.2,
 		},
 		{
 			// 芙宁娜普通版 Live2D 模型
@@ -106,21 +106,21 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// 动作声音音量 范围0~1，默认 0（静音）
 			volume: 0,
 			// 模型缩放比例
-			scale: 1.0,
+			scale: 0.9,
 			// X轴偏移，范围 -2~2，正值向右
-			x: 0,
+			x: -0.2,
 			// Y轴偏移，范围 -2~2，正值向上
-			y: 0,
+			y: -0.2,
 		},
 	],
 	// 显示位置：bottom-left 或 bottom-right
 	position: "bottom-left" as const,
 	// 画布尺寸（px）
-	size: { width: 200, height: 200 },
+	size: { width: 180, height: 150 },
 	// 主题色，用于菜单、状态条等 UI 元素的背景色，默认 'rgba(33, 131, 251, 0.9)'
 	primaryColor: "var(--l2d-msg-bg)",
 	// 入场/退场动画时长（ms）
-	transitionDuration: 1500,
+	transitionDuration: 2000,
 	// 入场/退场动画类型
 	transitionType: "slide" as const,
 	// 菜单配置
@@ -189,9 +189,9 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			"expression15.exp3.json",
 		],
 		clickEffects: ["💙", "✨", "💧"],
-		clickCooldown: 400,
+		clickCooldown: 100,
 		// 开心表情保持时间，结束后恢复模型初始表情
-		expressionDuration: 1600,
+		expressionDuration: 2000,
 		resetExpression: "expression1.exp3.json",
 	},
 	// 响应式配置
