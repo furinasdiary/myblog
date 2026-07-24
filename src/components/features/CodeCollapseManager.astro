@@ -1,0 +1,48 @@
+<script>
+  type CodeCollapseWindow = Window & {
+    __furinaCodeCollapseManagerBound?: boolean;
+  };
+
+  const codeCollapseWindow = window as CodeCollapseWindow;
+
+  if (!codeCollapseWindow.__furinaCodeCollapseManagerBound) {
+    codeCollapseWindow.__furinaCodeCollapseManagerBound = true;
+
+    document.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const button = target.closest<HTMLButtonElement>(
+        '.ec-collapse__toggle, .ec-collapse__header-toggle',
+      );
+      if (!button || event.defaultPrevented) return;
+
+      const frame = button.closest<HTMLElement>('.ec-collapse');
+      if (!frame) return;
+
+      event.preventDefault();
+
+      const isCollapsed = frame.classList.contains('ec-collapse--collapsed');
+      frame.classList.toggle('ec-collapse--collapsed', !isCollapsed);
+      frame.classList.toggle('ec-collapse--expanded', isCollapsed);
+
+      frame
+        .querySelectorAll<HTMLButtonElement>(
+          '.ec-collapse__toggle, .ec-collapse__header-toggle',
+        )
+        .forEach((toggle) => {
+          toggle.setAttribute('aria-expanded', isCollapsed ? 'true' : 'false');
+        });
+
+      if (!isCollapsed && frame.getBoundingClientRect().top < 0) {
+        const reduceMotion = window.matchMedia(
+          '(prefers-reduced-motion: reduce)',
+        ).matches;
+        frame.scrollIntoView({
+          behavior: reduceMotion ? 'auto' : 'smooth',
+          block: 'start',
+        });
+      }
+    });
+  }
+</script>

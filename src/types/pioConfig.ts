@@ -79,5 +79,7 @@ export type Live2DWidgetConfig = {
 	responsive?: {
 		hideOnMobile?: boolean; // 是否在移动端隐藏
 		mobileBreakpoint?: number; // 移动端断点，默认 768
+		mobileSize?: number | { width: number; height: number }; // 移动端画布尺寸
+		mobileMenuOffsetY?: number; // 移动端菜单垂直偏移，负值向上
 	};
 };

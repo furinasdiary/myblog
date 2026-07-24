@@ -94,11 +94,11 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// 动作声音音量 范围0~1，默认 0（静音）
 			volume: 0,
 			// 模型缩放比例
-			scale: 0.9,
+			scale: 1,
 			// X轴偏移，范围 -2~2，正值向右
-			x: -0.2,
+			x: -0.1,
 			// Y轴偏移，范围 -2~2，正值向上
-			y: -0.2,
+			y: -0.1,
 		},
 		{
 			// 芙宁娜普通版 Live2D 模型
@@ -106,17 +106,17 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 			// 动作声音音量 范围0~1，默认 0（静音）
 			volume: 0,
 			// 模型缩放比例
-			scale: 0.9,
+			scale: 1,
 			// X轴偏移，范围 -2~2，正值向右
-			x: -0.2,
+			x: -0.1,
 			// Y轴偏移，范围 -2~2，正值向上
-			y: -0.2,
+			y: -0.1,
 		},
 	],
 	// 显示位置：bottom-left 或 bottom-right
 	position: "bottom-left" as const,
 	// 画布尺寸（px）
-	size: { width: 180, height: 150 },
+	size: { width: 200, height: 200 },
 	// 主题色，用于菜单、状态条等 UI 元素的背景色，默认 'rgba(33, 131, 251, 0.9)'
 	primaryColor: "var(--l2d-msg-bg)",
 	// 入场/退场动画时长（ms）
@@ -176,22 +176,25 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 		interval: 6000,
 		// 位置偏移量（px），基于默认位置（模型正上方居中）进行微调
 		offset: {
-			x: 0, // 正值右移，负值左移
-			y: 0, // 正值下移，负值上移
+			x: 10, // 正值右移，负值左移
+			y: -15, // 负值向下贴近模型
 		},
 	},
 	// 点击桌宠时随机播放开心表情，并浮起芙宁娜主题粒子
 	interactive: {
 		enabled: true,
 		clickExpressions: [
-			"expression9.exp3.json",
+			"expression3.exp3.json",
+			"expression4.exp3.json",
+			"expression5.exp3.json",
+			"expression7.exp3.json",
+			"expression11.exp3.json",
 			"expression13.exp3.json",
-			"expression15.exp3.json",
 		],
-		clickEffects: ["💙", "✨", "💧"],
+		clickEffects: ["✨", "💧", "💖"],
 		clickCooldown: 100,
 		// 开心表情保持时间，结束后恢复模型初始表情
-		expressionDuration: 2000,
+		expressionDuration: 10000,
 		resetExpression: "expression1.exp3.json",
 	},
 	// 响应式配置
@@ -200,5 +203,9 @@ export const live2dWidgetConfig: Live2DWidgetConfig = {
 		hideOnMobile: false,
 		// 移动端断点
 		mobileBreakpoint: 768,
+		// 手机端画布尺寸（电脑端仍使用上方的 200 × 200）
+		mobileSize: { width: 180, height: 180 },
+		// 手机端按钮组向上移动 14px
+		mobileMenuOffsetY: -14,
 	},
 };

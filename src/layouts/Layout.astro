@@ -1,4 +1,5 @@
 ---
+import CodeCollapseManager from '@components/features/CodeCollapseManager.astro';
 import GoogleAnalytics from "@components/analytics/GoogleAnalytics.astro";
 import La51Analytics from "@components/analytics/La51Analytics.astro";
 import MicrosoftClarity from "@components/analytics/MicrosoftClarity.astro";
@@ -586,6 +587,7 @@ const siteLang = lang.replace("_", "-");
 
     <!-- Fancybox Manager -->
     <FancyboxManager />
+    <CodeCollapseManager />
   </body>
 </html>
 

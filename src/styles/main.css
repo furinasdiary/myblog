@@ -9,6 +9,7 @@
 @import './anime-bangumi.css';
 @import './tags.css';
 @import './categories.css';
+@import './expressive-code.css';
 
 @plugin '@tailwindcss/typography';
 
@@ -586,4 +587,3 @@ html {
 .pagination-info {
   @apply text-sm text-(--text-secondary) text-center mb-2;
 }
-

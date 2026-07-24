@@ -60,6 +60,8 @@ interface Props {
 		responsive?: {
 			hideOnMobile?: boolean;
 			mobileBreakpoint?: number;
+			mobileSize?: number | { width: number; height: number };
+			mobileMenuOffsetY?: number;
 		};
 	};
 }
@@ -270,7 +272,7 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 		try {
 			const models = JSON.parse(container.dataset.models || "[]");
 			const position = container.dataset.position || "bottom-left";
-			const size = JSON.parse(container.dataset.size || "300");
+			const desktopSize = JSON.parse(container.dataset.size || '300');
 			const primaryColor = container.dataset.primaryColor || undefined;
 			const transitionDuration = container.dataset.transitionDuration
 				? parseInt(container.dataset.transitionDuration)
@@ -279,11 +281,25 @@ function serializeMenus(menus: Props["config"]["menus"]) {
 			const menus = JSON.parse(container.dataset.menus || "{}");
 			const tips = JSON.parse(container.dataset.tips || "{}");
 			const interactive = JSON.parse(container.dataset.interactive || "{}");
-			const responsive = JSON.parse(container.dataset.responsive || "{}");
+			const responsive = JSON.parse(container.dataset.responsive || '{}');
+			const breakpoint = responsive.mobileBreakpoint || 768;
+			const size =
+				window.innerWidth <= breakpoint && responsive.mobileSize
+					? responsive.mobileSize
+					: desktopSize;
+
+			if (
+				window.innerWidth <= breakpoint &&
+				responsive.mobileMenuOffsetY !== undefined
+			) {
+				menus.style = {
+					...(menus.style || {}),
+					transform: `translateY(-50%) translateY(${responsive.mobileMenuOffsetY}px)`,
+				};
+			}
 
 			// 响应式检查：移动端隐藏
 			if (responsive.hideOnMobile) {
-				const breakpoint = responsive.mobileBreakpoint || 768;
 				if (window.innerWidth <= breakpoint) {
 					container.style.display = "none";
 					return;

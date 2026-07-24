@@ -3,6 +3,11 @@
     @apply shadow-none!;
   }
 
+  /* 8 行预览 × 1.5rem 行高，避免脚本初始化后代码块高度跳变 */
+  .ec-collapse {
+    --ec-collapse-preview-height: 12rem;
+  }
+
   .title {
     font-family:
       var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
@@ -57,4 +62,3 @@ body.wallpaper-transparent .expressive-code .frame {
   background-color: var(--card-bg-transparent) !important;
   background: var(--card-bg-transparent) !important;
 }
-
