@@ -6,8 +6,8 @@ if (!commentConfig?.giscus) {
 }
 
 const giscus = commentConfig.giscus;
-const lightTheme = new URL("/assets/css/giscus-light.css", Astro.site).href;
-const darkTheme = new URL("/assets/css/giscus-dark.css", Astro.site).href;
+const lightTheme = new URL("/assets/css/giscus-light.css?v=2", Astro.site).href;
+const darkTheme = new URL("/assets/css/giscus-dark.css?v=2", Astro.site).href;
 const loading = Astro.url.pathname.startsWith("/guestbook")
   ? undefined
   : giscus.loading;
