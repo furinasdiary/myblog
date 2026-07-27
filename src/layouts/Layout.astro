@@ -14,6 +14,7 @@ import ConfigCarrier from "@components/layout/ConfigCarrier.astro";
 import {
 	analyticsConfig,
 	backgroundWallpaper,
+	commentConfig,
 	expressiveCodeConfig,
 	profileConfig,
 	siteConfig,
@@ -93,6 +94,9 @@ const siteLang = lang.replace("_", "-");
 <html lang={siteLang} class="bg-(--page-bg) text-[14px] md:text-[16px]" data-wallpaper-mode={backgroundWallpaper.mode}>
   <head>
     <meta charset="UTF-8" />
+    {commentConfig.type === "giscus" && (
+      <link rel="preconnect" href="https://giscus.app" crossorigin="anonymous" />
+    )}
     {analyticsConfig?.googleAnalyticsId && (
             <GoogleAnalytics analyticsId={analyticsConfig.googleAnalyticsId} />
     )}

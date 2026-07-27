@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+  <defs>
+    <linearGradient id="blade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="0.48" stop-color="#e9faff"/>
+      <stop offset="1" stop-color="#6ed7ff"/>
+    </linearGradient>
+    <linearGradient id="guard" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#087bc7"/>
+      <stop offset="0.5" stop-color="#3dc8ff"/>
+      <stop offset="1" stop-color="#ffffff"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="0.8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <g filter="url(#glow)">
+    <path d="M2.35 2.35 20.35 15.55 18.65 18.65 15.55 20.35Z" fill="url(#blade)" stroke="#31bdff" stroke-width="1.2" stroke-linejoin="round"/>
+    <path d="M3.5 3.5 18.1 17.9" fill="none" stroke="#dff8ff" stroke-width="1.05" stroke-linecap="round"/>
+    <path d="M13.4 23.8c2.7-1.6 4.8-3.5 6.1-5.1 1.5-1.7 3-3.7 4.4-6.2 1.2.5 2.1 1.4 2.6 2.6-1.5 2.8-3.1 4.9-4.8 6.6-1.7 1.7-3.9 3.3-6.6 4.8-1.3-.5-2.2-1.4-2.7-2.7Z" fill="url(#guard)" stroke="#076aa8" stroke-width="1.05" stroke-linejoin="round"/>
+    <path d="m21.8 21.8 8 8" fill="none" stroke="#075b96" stroke-width="4.2" stroke-linecap="round"/>
+    <path d="m22.8 24.8 2-2m.6 5.2 2-2" fill="none" stroke="#dff8ff" stroke-width="0.9" stroke-linecap="round"/>
+    <circle cx="20.3" cy="20.3" r="2.35" fill="#dff8ff" stroke="#31bdff" stroke-width="1.5"/>
+    <path d="m28.7 28.7 4.9 2.1-2.8 2.8Z" fill="#31bdff" stroke="#dff8ff" stroke-width="0.9" stroke-linejoin="round"/>
+  </g>
+</svg>

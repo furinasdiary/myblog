@@ -6,8 +6,11 @@ if (!commentConfig?.giscus) {
 }
 
 const giscus = commentConfig.giscus;
-const lightTheme = "light";
-const darkTheme = "dark";
+const lightTheme = new URL("/assets/css/giscus-light.css", Astro.site).href;
+const darkTheme = new URL("/assets/css/giscus-dark.css", Astro.site).href;
+const loading = Astro.url.pathname.startsWith("/guestbook")
+  ? undefined
+  : giscus.loading;
 ---
 
 <!-- 
@@ -27,8 +30,13 @@ const darkTheme = "dark";
   inputPosition={giscus.inputPosition}
   theme={lightTheme}
   lang={giscus.lang}
-  loading={giscus.loading}
+  loading={loading}
 />
+
+<script>
+  // Bundle the official web component with the site instead of waiting for esm.sh.
+  import "giscus";
+</script>
 
 <script is:inline define:vars={{ lightTheme, darkTheme }}>
   const requestedPath = new URLSearchParams(window.location.search).get("path");
@@ -37,8 +45,6 @@ const darkTheme = "dark";
     widget.setAttribute("mapping", "specific");
     widget.setAttribute("term", requestedPath);
   }
-
-  import("https://esm.sh/giscus");
 
   function updateGiscusTheme() {
     const isDark = document.documentElement.classList.contains('dark');
@@ -67,3 +73,11 @@ const darkTheme = "dark";
 
   window.giscusThemeObserver.observe(document.documentElement, { attributes: true });
 </script>
+
+<style is:global>
+  /* The parent cursor cannot follow pointer events inside the cross-origin iframe. */
+  html:has(giscus-widget:hover) #judgement-cursor-effects {
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+</style>
