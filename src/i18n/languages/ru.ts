@@ -296,6 +296,7 @@ export const ru: Translation = {
 	[Key.wavesAnimation]: "Анимация волн",
 	[Key.gradientTransition]: "Градиентный переход",
 	[Key.sakuraEffect]: "Гидро-пузыри",
+	[Key.bubbleCount]: "Количество пузырей",
 	[Key.effectsSettings]: "Настройки эффектов",
 	[Key.overlaySettings]: "Настройки прозрачности",
 	[Key.overlayOpacity]: "Прозрачность обоев",

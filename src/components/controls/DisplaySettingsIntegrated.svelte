@@ -15,6 +15,7 @@ import {
 	getDefaultOverlayBlur,
 	getDefaultOverlayCardOpacity,
 	getDefaultOverlayOpacity,
+	getDefaultSakuraCount,
 	getDefaultSakuraEnabled,
 	getDefaultWavesEnabled,
 	getHue,
@@ -24,9 +25,13 @@ import {
 	getStoredOverlayBlur,
 	getStoredOverlayCardOpacity,
 	getStoredOverlayOpacity,
+	getStoredSakuraCount,
 	getStoredSakuraEnabled,
 	getStoredWallpaperMode,
 	getStoredWavesEnabled,
+	HYDRO_BUBBLE_COUNT_MAX,
+	HYDRO_BUBBLE_COUNT_MIN,
+	HYDRO_BUBBLE_COUNT_STEP,
 	setBannerCarouselEnabled,
 	setBannerTitleEnabled,
 	setGradientEnabled,
@@ -34,6 +39,7 @@ import {
 	setOverlayBlur,
 	setOverlayCardOpacity,
 	setOverlayOpacity,
+	setSakuraCount,
 	setSakuraEnabled,
 	setWallpaperMode,
 	setWavesEnabled,
@@ -82,6 +88,8 @@ let bannerCarouselEnabled = $state(true);
 const defaultBannerCarouselEnabled = getDefaultBannerCarouselEnabled();
 let sakuraEnabled = $state(true);
 const defaultSakuraEnabled = getDefaultSakuraEnabled();
+let sakuraCount = $state(getDefaultSakuraCount());
+const defaultSakuraCount = getDefaultSakuraCount();
 let overlayOpacity = $state(getDefaultOverlayOpacity());
 const defaultOverlayOpacity = getDefaultOverlayOpacity();
 let overlayBlur = $state(getDefaultOverlayBlur());
@@ -154,6 +162,9 @@ let bannerSettingsIsDefault = $derived(
 		(!isGradientSwitchable || gradientEnabled === defaultGradientEnabled) &&
 		(!isBannerCarouselSwitchable ||
 			bannerCarouselEnabled === defaultBannerCarouselEnabled),
+);
+let effectsSettingsIsDefault = $derived(
+	sakuraEnabled === defaultSakuraEnabled && sakuraCount === defaultSakuraCount,
 );
 const hasAnyContent =
 	showThemeColor ||
@@ -309,6 +320,19 @@ function toggleSakuraEnabled() {
 	setSakuraEnabled(sakuraEnabled);
 }
 
+function setHydroBubbleCount(count: number) {
+	sakuraCount = count;
+	setSakuraCount(count);
+}
+
+function resetEffectsSettings() {
+	sakuraEnabled = defaultSakuraEnabled;
+	sakuraCount = defaultSakuraCount;
+	setSakuraCount(defaultSakuraCount);
+	setSakuraEnabled(defaultSakuraEnabled);
+	requestAnimationFrame(refreshAllRangeProgress);
+}
+
 function switchWallpaperMode(newMode: WALLPAPER_MODE) {
 	wallpaperMode = newMode;
 	setWallpaperMode(newMode);
@@ -396,11 +420,13 @@ onMount(() => {
 
 	// 从 localStorage 读取水蓝气泡特效状态
 	sakuraEnabled = getStoredSakuraEnabled();
+	sakuraCount = getStoredSakuraCount();
 
 	// 从localStorage读取全屏透明设置状态
 	overlayOpacity = getStoredOverlayOpacity();
 	overlayBlur = getStoredOverlayBlur();
 	overlayCardOpacity = getStoredOverlayCardOpacity();
+	requestAnimationFrame(refreshAllRangeProgress);
 
 	// 从localStorage读取用户偏好布局
 	const savedLayout = localStorage.getItem("postListLayout");
@@ -720,7 +746,7 @@ $effect(() => {
             >
                 {i18n(I18nKey.effectsSettings)}
                 <button aria-label="Reset to Default" class="btn-regular w-7 h-7 rounded-md  active:scale-90"
-                        class:opacity-0={sakuraEnabled === defaultSakuraEnabled} class:pointer-events-none={sakuraEnabled === defaultSakuraEnabled} onclick={() => { sakuraEnabled = defaultSakuraEnabled; setSakuraEnabled(defaultSakuraEnabled); }}>
+						class:opacity-0={effectsSettingsIsDefault} class:pointer-events-none={effectsSettingsIsDefault} onclick={resetEffectsSettings}>
                     <div class="text-(--btn-content)">
                         <Icon icon="fa7-solid:arrow-rotate-left" class="text-[0.875rem]"></Icon>
                     </div>
@@ -742,6 +768,26 @@ $effect(() => {
                              class:left-5={sakuraEnabled}></div>
                     </div>
                 </button>
+				<div class="rounded-md bg-(--btn-regular-bg) px-3 py-2 transition-opacity" class:opacity-50={!sakuraEnabled}>
+					<div class="mb-2 flex items-center justify-between gap-3">
+						<div class="flex min-w-0 items-center gap-3">
+							<Icon icon="material-symbols:bubble-chart-outline-rounded" class="text-[1.25rem] shrink-0"></Icon>
+							<span class="text-sm">{i18n(I18nKey.bubbleCount)}</span>
+						</div>
+						<span class="min-w-9 rounded-md bg-(--btn-regular-bg-hover) px-2 py-0.5 text-center text-sm font-bold text-(--primary)">{sakuraCount}</span>
+					</div>
+					<input
+						aria-label={i18n(I18nKey.bubbleCount)}
+						type="range"
+						min={HYDRO_BUBBLE_COUNT_MIN}
+						max={HYDRO_BUBBLE_COUNT_MAX}
+						step={HYDRO_BUBBLE_COUNT_STEP}
+						value={sakuraCount}
+						disabled={!sakuraEnabled}
+						oninput={(event) => setHydroBubbleCount(Number(event.currentTarget.value))}
+						class="slider bubble-count-slider w-full"
+					/>
+				</div>
             </div>
         </div>
     {/if}
@@ -835,6 +881,30 @@ $effect(() => {
                 border-radius 0
                 background transparent
                 box-shadow none
+
+        input[type="range"].bubble-count-slider
+            height 0.6rem
+            cursor pointer
+
+            &:disabled
+                cursor not-allowed
+
+            &::-webkit-slider-thumb
+                -webkit-appearance none
+                height 1rem
+                width 1rem
+                border 2px solid white
+                border-radius 999px
+                background var(--primary)
+                box-shadow 0 1px 5px rgba(0, 0, 0, 0.22)
+
+            &::-moz-range-thumb
+                height 0.75rem
+                width 0.75rem
+                border 2px solid white
+                border-radius 999px
+                background var(--primary)
+                box-shadow 0 1px 5px rgba(0, 0, 0, 0.22)
 
         #colorSlider
             background-image var(--color-selection-bar)

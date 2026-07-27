@@ -1149,8 +1149,28 @@ export function applyGradientEnabledToDocument(enabled: boolean): void {
 }
 
 // Hydro bubble effect functions (legacy Sakura names preserve stored settings)
+export const HYDRO_BUBBLE_COUNT_MIN = 10;
+export const HYDRO_BUBBLE_COUNT_MAX = 100;
+export const HYDRO_BUBBLE_COUNT_STEP = 5;
+
+function normalizeHydroBubbleCount(count: number): number {
+	const fallback = sakuraConfig?.sakuraNum ?? 50;
+	const finiteCount = Number.isFinite(count) ? count : fallback;
+	const steppedCount =
+		Math.round(finiteCount / HYDRO_BUBBLE_COUNT_STEP) * HYDRO_BUBBLE_COUNT_STEP;
+
+	return Math.min(
+		HYDRO_BUBBLE_COUNT_MAX,
+		Math.max(HYDRO_BUBBLE_COUNT_MIN, steppedCount),
+	);
+}
+
 export function getDefaultSakuraEnabled(): boolean {
 	return sakuraConfig?.enable ?? false;
+}
+
+export function getDefaultSakuraCount(): number {
+	return normalizeHydroBubbleCount(sakuraConfig?.sakuraNum ?? 50);
 }
 
 export function getStoredSakuraEnabled(): boolean {
@@ -1162,6 +1182,20 @@ export function getStoredSakuraEnabled(): boolean {
 		return getDefaultSakuraEnabled();
 	}
 	return stored === "true";
+}
+
+export function getStoredSakuraCount(): number {
+	if (
+		typeof localStorage === "undefined" ||
+		typeof localStorage.getItem !== "function"
+	) {
+		return getDefaultSakuraCount();
+	}
+	const stored = localStorage.getItem("sakuraCount");
+	if (stored === null) {
+		return getDefaultSakuraCount();
+	}
+	return normalizeHydroBubbleCount(Number(stored));
 }
 
 export function setSakuraEnabled(enabled: boolean): void {
@@ -1177,6 +1211,29 @@ export function setSakuraEnabled(enabled: boolean): void {
 	window.dispatchEvent(
 		new CustomEvent("sakuraToggle", { detail: { enabled } }),
 	);
+}
+
+export function setSakuraCount(count: number): void {
+	const safeCount = normalizeHydroBubbleCount(count);
+	if (
+		typeof localStorage !== "undefined" &&
+		typeof localStorage.setItem === "function"
+	) {
+		localStorage.setItem("sakuraCount", String(safeCount));
+	}
+	if (typeof document !== "undefined") {
+		document.documentElement.setAttribute(
+			"data-sakura-count",
+			String(safeCount),
+		);
+	}
+	if (typeof window !== "undefined") {
+		window.dispatchEvent(
+			new CustomEvent("sakuraCountChange", {
+				detail: { count: safeCount },
+			}),
+		);
+	}
 }
 
 // Banner title functions

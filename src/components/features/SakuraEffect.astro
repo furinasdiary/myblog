@@ -6,6 +6,7 @@
 	import { sakuraConfig } from "@/config";
 	import type { SakuraConfig } from "@/types/effectsConfig";
 	import type { SakuraManagerLike } from "@/types/sakura-worker";
+	import { getStoredSakuraCount } from "@/utils/setting-utils";
 
 	const randomBetween = (min: number, max: number) =>
 		min + Math.random() * (max - min);
@@ -125,6 +126,7 @@
 			storedEnabled !== null ? storedEnabled === "true" : sakuraConfig.enable;
 		const config: SakuraConfig = Object.assign({}, sakuraConfig, {
 			enable: isEnabled,
+			sakuraNum: getStoredSakuraCount(),
 		});
 		initSakura(config);
 
@@ -138,6 +140,18 @@
 				void manager.init();
 			} else if (!detail.enabled && manager.getIsRunning()) {
 				manager.stop();
+			}
+		});
+
+		window.addEventListener("sakuraCountChange", (event: Event) => {
+			const detail = (event as CustomEvent<{ count: number }>).detail;
+			const manager = window.sakuraManager;
+			if (!detail || !manager || !Number.isFinite(detail.count)) return;
+
+			manager.config.sakuraNum = detail.count;
+			if (manager.getIsRunning()) {
+				manager.stop();
+				void manager.init();
 			}
 		});
 	})();

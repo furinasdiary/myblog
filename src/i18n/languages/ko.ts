@@ -293,6 +293,7 @@ export const ko: Translation = {
 	[Key.wavesAnimation]: "파도 애니메이션",
 	[Key.gradientTransition]: "그라디언트 전환",
 	[Key.sakuraEffect]: "물빛 버블",
+	[Key.bubbleCount]: "버블 수",
 	[Key.effectsSettings]: "효과 설정",
 	[Key.overlaySettings]: "투명도 설정",
 	[Key.overlayOpacity]: "배경화면 불투명도",

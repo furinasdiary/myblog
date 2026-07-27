@@ -294,6 +294,7 @@ export const en: Translation = {
 	[Key.wavesAnimation]: "Waves Animation",
 	[Key.gradientTransition]: "Gradient Transition",
 	[Key.sakuraEffect]: "Hydro Bubbles",
+	[Key.bubbleCount]: "Bubble Count",
 	[Key.effectsSettings]: "Effects Settings",
 	[Key.overlaySettings]: "Transparency Settings",
 	[Key.overlayOpacity]: "Wallpaper Opacity",
